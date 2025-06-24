@@ -1,0 +1,138 @@
+CREATE TABLE Aluno (
+    Matricula CHAR(9) PRIMARY KEY,
+    CPF CHAR(11) UNIQUE NOT NULL,
+    Nome VARCHAR NOT NULL,
+    Email VARCHAR UNIQUE NOT NULL,
+    DataDeNascimento DATE,
+    Idade INTEGER,
+    Status VARCHAR NOT NULL,
+    IRA DECIMAL(5,4),
+    Integralizacao DECIMAL(5,2),
+    FotoPerfil BYTEA
+);
+
+CREATE TABLE Monitor (
+    Codigo VARCHAR,
+    Tipo VARCHAR NOT NULL,
+    Salario DECIMAL(12,2),
+    fk_Aluno_Matricula CHAR(9),
+    PRIMARY KEY (Codigo, fk_Aluno_Matricula),
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
+);
+
+CREATE TABLE Professor (
+    Matricula VARCHAR PRIMARY KEY,
+    CPF CHAR(11) UNIQUE NOT NULL,
+    Nome VARCHAR NOT NULL,
+    Email VARCHAR UNIQUE NOT NULL,
+    DataNascimento DATE,
+    Idade INTEGER,
+    Status VARCHAR NOT NULL,
+    Salario DECIMAL(12,2)
+);
+
+CREATE TABLE Departamento (
+    Codigo VARCHAR PRIMARY KEY,
+    Nome VARCHAR NOT NULL,
+    Telefone VARCHAR(15)
+);
+
+CREATE TABLE Disciplina (
+    Codigo VARCHAR PRIMARY KEY,
+    Nome VARCHAR NOT NULL,
+    CargaHoraria INTEGER,
+    Ementa VARCHAR,
+    fk_Departamento_Codigo VARCHAR,
+    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
+);
+
+CREATE TABLE Curso_Coordenador (
+    Codigo VARCHAR UNIQUE NOT NULL,
+    Nome VARCHAR NOT NULL,
+    CargaHorariaTotal INTEGER NOT NULL,
+    MinimoSemestres INTEGER,
+    MaximoSemestres INTEGER,
+    Turno VARCHAR,
+    fk_Departamento_Codigo VARCHAR,
+    fk_Prof_Coord_Matricula VARCHAR UNIQUE,
+    BonusSalarial DECIMAL(12,2),
+    PRIMARY KEY (Codigo, fk_Prof_Coord_Matricula),
+    FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE,
+    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
+);
+
+CREATE TABLE Local (
+    Codigo VARCHAR PRIMARY KEY,
+    Campus VARCHAR,
+    Bloco VARCHAR,
+    Sala VARCHAR
+);
+
+CREATE TABLE Turma (
+    Numero INTEGER NOT NULL,
+    Semestre VARCHAR NOT NULL,
+    DataHora VARCHAR,
+    Bibliografia VARCHAR,
+    Capacidade INTEGER NOT NULL,
+    fk_Disciplina_Codigo VARCHAR,
+    PRIMARY KEY (Numero, Semestre),
+    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo)
+);
+
+CREATE TABLE PreRequisitos (
+    fk_Disciplina VARCHAR,
+    fk_Disciplina_Requisito VARCHAR,
+    PRIMARY KEY (fk_Disciplina, fk_Disciplina_Requisito),
+    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo),
+    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo)
+);
+
+CREATE TABLE ExisteEm (
+    fk_Local_Codigo VARCHAR,
+    fk_Turma_Numero INTEGER,
+    fk_Turma_Semestre VARCHAR,
+    PRIMARY KEY (fk_Local_Codigo, fk_Turma_Numero, fk_Turma_Semestre),
+    FOREIGN KEY (fk_Local_Codigo) REFERENCES Local (Codigo),
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+);
+
+CREATE TABLE Ensina (
+    fk_Prof_Coord_Matricula VARCHAR,
+    fk_Turma_Numero INTEGER,
+    fk_Turma_Semestre VARCHAR,
+    PRIMARY KEY (fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre),
+    FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula),
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+);
+
+CREATE TABLE Cursando (
+    fk_Curso_Codigo VARCHAR,
+    fk_Aluno_Matricula VARCHAR,
+    PRIMARY KEY (fk_Curso_Codigo, fk_Aluno_Matricula),
+    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso_Coordenador (Codigo),
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula)
+);
+
+CREATE TABLE HistoricoFazParte (
+    fk_Turma_Numero INTEGER,
+    fk_Turma_Semestre VARCHAR,
+    fk_Aluno_Matricula CHAR(11),
+    Status VARCHAR,
+    Mencao VARCHAR,
+    PRIMARY KEY (fk_Turma_Numero, fk_Turma_Semestre, fk_Aluno_Matricula),
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre),
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula)
+);
+
+CREATE TABLE FilaSeMatricula (
+    Codigo VARCHAR PRIMARY KEY,
+    Prioridade INTEGER NOT NULL,
+    Posicao INTEGER NOT NULL,
+    Periodo VARCHAR NOT NULL,
+    Preferencia INTEGER NOT NULL,
+    fk_Aluno_Matricula CHAR(11),
+    fk_Turma_Numero INTEGER,
+    fk_Turma_Semestre VARCHAR,
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula),
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+);
