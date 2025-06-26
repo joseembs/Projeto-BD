@@ -1,5 +1,17 @@
 {
+  "name": "sigabd",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Elis Rodrigues Borges, Henrique Cerqueira Ramos Sales, José Edson Martins Bezerra da Silva",
+  "license": "ISC",
+  "description": "Código desenvolvido para o projeto da disciplina Bancos de Dados, no semestre 2025.1 na Universidade de Brasília",
   "dependencies": {
+    "dotenv": "^16.5.0",
+    "pg": "^8.16.2",
     "express": "^5.1.0"
   }
 }
