@@ -1,9 +1,9 @@
 {
   "name": "sigabd",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "API/sigbd-api.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node API/sigbd-api.js"
   },
   "keywords": [],
   "author": "Elis Rodrigues Borges, Henrique Cerqueira Ramos Sales, José Edson Martins Bezerra da Silva",
