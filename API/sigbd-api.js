@@ -14,6 +14,8 @@ const pool = new Pool({
 });
 
 app.use(express.json());
+const professorRoutes = require("./professor-crud");
+app.use("/professores", professorRoutes);
 
 app.get('/usuarios', async (req, res) => {
   try {
