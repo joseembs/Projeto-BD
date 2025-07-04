@@ -64,7 +64,7 @@ router.patch("/:matricula", async (req, res) => {
     );
     if (result.rowCount === 0)
       return res.status(404).send("Nenhum Monitor encontrado com essa matrícula");
-    res.send("Dados atualizados com sucesso");
+    res.status(201).send("Monitor atualizado com sucesso");
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -78,7 +78,7 @@ router.delete("/:codigo", async (req, res) => {
     );
     if (result.rowCount === 0)
       return res.status(404).send("Nenhum Monitor encontrado com esse código");
-    res.send(result.rows[0]);
+    res.status(201).send("Monitor deletado com sucesso");
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

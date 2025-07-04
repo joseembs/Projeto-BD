@@ -17,18 +17,21 @@ router.post("/", async (req, res) => {
     FotoPerfil,
   } = req.body;
 
+  let FotoBuffer;
   if (FotoPerfil){
     if (typeof FotoPerfil === 'string') {
-      FotoPerfil = Buffer.from(FotoPerfil, "base64");
+      FotoBuffer = Buffer.from(FotoPerfil, "base64");
+    } else if (FotoPerfil instanceof Buffer) {
+      FotoBuffer = FotoPerfil;
     }
   } else {
-    FotoPerfil = fs.readFileSync("../foto_padrao.png");
+    FotoBuffer = fs.readFileSync("../foto_padrao.png");
   }
 
   try {
     await pool.query(
-      "INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataNascimento, Idade, Status, IRA, Integralizacao, FotoPerfil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
-      [Matricula, CPF, Nome, Email, DataNascimento, Idade, Status, IRA, Integralizacao, FotoPerfil]
+      "INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, FotoPerfil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+      [Matricula, CPF, Nome, Email, DataNascimento, Idade, Status, IRA, Integralizacao, FotoBuffer]
     );
     res.status(201).send("Aluno cadastrado com sucesso");
   } catch (err) {
@@ -107,7 +110,7 @@ router.put("/:matricula/foto", async (req, res) => {
     );
     if (result.rowCount === 0)
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
-    res.json(result.rows[0]);
+    res.status(201).send("Foto do aluno atualizada com sucesso");
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -121,7 +124,7 @@ router.delete("/:matricula", async (req, res) => {
     );
     if (result.rowCount === 0)
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
-    res.send(result.rows[0]);
+    res.status(201).send("Aluno deletado com sucesso");
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
