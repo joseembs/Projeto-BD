@@ -17,6 +17,7 @@ app.use(express.json());
 const professorRoutes = require("./professor-crud");
 app.use("/professores", professorRoutes);
 
+
 app.get('/usuarios', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM aluno');
@@ -27,6 +28,7 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
+// joga node API/sigbd-api.js no terminal para rodar
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
