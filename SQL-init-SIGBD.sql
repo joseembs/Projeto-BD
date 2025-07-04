@@ -46,8 +46,8 @@ CREATE TABLE Disciplina (
     FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
 );
 
-CREATE TABLE Curso_Coordenador (
-    Codigo VARCHAR UNIQUE NOT NULL,
+CREATE TABLE Curso (
+    Codigo VARCHAR PRIMARY KEY,
     Nome VARCHAR NOT NULL,
     CargaHorariaTotal INTEGER NOT NULL,
     MinimoSemestres INTEGER,
@@ -56,7 +56,6 @@ CREATE TABLE Curso_Coordenador (
     fk_Departamento_Codigo VARCHAR,
     fk_Prof_Coord_Matricula VARCHAR UNIQUE,
     BonusSalarial DECIMAL(12,2),
-    PRIMARY KEY (Codigo, fk_Prof_Coord_Matricula),
     FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE,
     FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
 );
@@ -72,10 +71,22 @@ CREATE TABLE Turma (
     Numero INTEGER NOT NULL,
     Semestre VARCHAR NOT NULL,
     DataHora VARCHAR,
-    Bibliografia VARCHAR,
+    Metodologia VARCHAR,
     Capacidade INTEGER NOT NULL,
     fk_Disciplina_Codigo VARCHAR,
     PRIMARY KEY (Numero, Semestre),
+    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo)
+);
+
+CREATE TABLE Ementa (
+    Numero INTEGER NOT NULL,
+    Detalhes VARCHAR,
+    Bibliografia VARCHAR,
+    Topicos VARCHAR,
+    Modulos VARCHAR,
+    Ativa BOOLEAN,
+    fk_Disciplina_Codigo VARCHAR NOT NULL,
+    PRIMARY KEY (Numero, fk_Disciplina_Codigo),
     FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo)
 );
 
@@ -109,7 +120,7 @@ CREATE TABLE Cursando (
     fk_Curso_Codigo VARCHAR,
     fk_Aluno_Matricula VARCHAR,
     PRIMARY KEY (fk_Curso_Codigo, fk_Aluno_Matricula),
-    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso_Coordenador (Codigo),
+    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso (Codigo),
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula)
 );
 
