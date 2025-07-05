@@ -1,15 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 const fs = require('fs');
 
-router.post("/", async (req, res) => {
+const alunoSchema = Joi.object({
+  Matricula: Joi.string().length(9).pattern(/^\d+$/).required(),
+  CPF: Joi.string().length(11).pattern(/^\d+$/).required(),
+  Nome: Joi.string().min(2).required(),
+  Email: Joi.string().email().required(),
+  DataDeNascimento: Joi.date().iso().optional(), // "YYYY-MM-DD"
+  Idade: Joi.number().integer().min(0).optional(),
+  Status: Joi.string().required(),
+  // Joi.string().valid('Ativo', 'Inativo', 'Trancado').required()
+  IRA: Joi.number().precision(4).min(0).max(1).optional(),
+  Integralizacao: Joi.number().precision(2).min(0).max(100).optional(),
+  FotoPerfil: Joi.string().base64().optional(),
+  // FotoPerfil: Joi.binary().optional(),
+});
+
+const alunoPatchSchema = alunoSchema.fork(
+  Object.keys(alunoSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = alunoSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   const {
     Matricula,
     CPF,
     Nome,
     Email,
-    DataNascimento,
+    DataDeNascimento,
     Idade,
     Status,
     IRA,
@@ -25,30 +51,31 @@ router.post("/", async (req, res) => {
       FotoBuffer = FotoPerfil;
     }
   } else {
-    FotoBuffer = fs.readFileSync("../foto_padrao.png");
+    const path = require('path');
+    FotoBuffer = fs.readFileSync(path.join(__dirname, "../foto_padrao.png"));
   }
 
   try {
     await pool.query(
       "INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, FotoPerfil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
-      [Matricula, CPF, Nome, Email, DataNascimento, Idade, Status, IRA, Integralizacao, FotoBuffer]
+      [Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, FotoBuffer]
     );
     res.status(201).send("Aluno cadastrado com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Aluno");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/:matricula", async (req, res) => {
+router.get("/:matricula", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Aluno WHERE Matricula = $1",
@@ -58,11 +85,16 @@ router.get("/:matricula", async (req, res) => {
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:matricula", async (req, res) => {
+router.patch("/:matricula", async (req, res, next) => {
+  const { error } = alunoPatchSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -94,11 +126,11 @@ router.patch("/:matricula", async (req, res) => {
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
     res.send("Dados atualizados com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.put("/:matricula/foto", async (req, res) => {
+router.put("/:matricula/foto", async (req, res, next) => {
   let FotoPerfil = req.body;
   if (typeof FotoPerfil === 'string') {
     FotoPerfil = Buffer.from(FotoPerfil, "base64");
@@ -112,11 +144,11 @@ router.put("/:matricula/foto", async (req, res) => {
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
     res.status(201).send("Foto do aluno atualizada com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.delete("/:matricula", async (req, res) => {
+router.delete("/:matricula", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Aluno WHERE Matricula=$1",
@@ -126,7 +158,7 @@ router.delete("/:matricula", async (req, res) => {
       return res.status(404).send("Nenhum aluno encontrado com essa matrícula");
     res.status(201).send("Aluno deletado com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

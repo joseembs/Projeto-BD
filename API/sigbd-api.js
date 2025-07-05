@@ -1,4 +1,5 @@
 const express = require("express");
+const errorHandler = require('./errorHandler');
 
 const port = 3000;
 const app = express();
@@ -33,3 +34,6 @@ app.use("/ementas", ementaRoutes);
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
+
+// middleware para tratamento de erros, deve ser o último "use"
+app.use(errorHandler);
