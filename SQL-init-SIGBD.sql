@@ -147,3 +147,10 @@ CREATE TABLE FilaSeMatricula (
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula),
     FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
 );
+
+CREATE TABLE Coordenador (
+    Codigo VARCHAR PRIMARY KEY,
+    BonusSalarial DECIMAL(12,2),
+    fk_Professor_Matricula VARCHAR UNIQUE,
+    FOREIGN KEY (fk_Professor_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE
+);
