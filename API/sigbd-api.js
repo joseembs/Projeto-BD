@@ -5,7 +5,7 @@ const app = express();
 
 app.use(express.json());
 
-const professorRoutes = require("./professor-crud");
+const professorRoutes = require("./professor/professor-crud");
 app.use("/professores", professorRoutes);
 
 const alunoRoutes = require("./aluno-crud");
