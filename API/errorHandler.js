@@ -7,35 +7,35 @@ function errorHandler(err, req, res, next) {
 
   // Outros erros
   console.error(err);
-  res.status(500).json({ erro: 'Erro inesperado no servidor' });
+  res.status(500).json({ erro: "Erro inesperado no servidor" });
 }
 
 function handlePgError(err) {
   switch (err.code) {
-    case '23505':
+    case "23505":
       return {
         status: 409,
-        message: 'Valor duplicado (violação de UNIQUE ou PK)',
+        message: "Valor duplicado de atributo UNIQUE ou PK",
       };
-    case '23503':
+    case "23503":
       return {
         status: 400,
-        message: 'Chave estrangeira inválida (FK)',
+        message: "Chave estrangeira inválida (FK não ligada a uma PK existente)",
       };
-    case '23502':
+    case "23502":
       return {
         status: 400,
-        message: 'Campo obrigatório ausente (NOT NULL)',
+        message: "Campo obrigatório nulo (erro de NOT NULL)",
       };
-    case '42703':
+    case "42703":
       return {
         status: 400,
-        message: 'Coluna inválida (erro de nome de campo)',
+        message: "Coluna inválida (erro de nome de campo)",
       };
     default:
       return {
         status: 500,
-        message: 'Erro interno no banco de dados',
+        message: "Erro interno no banco de dados",
       };
   }
 }
