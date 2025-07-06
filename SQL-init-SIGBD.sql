@@ -40,7 +40,6 @@ CREATE TABLE Disciplina (
     Codigo VARCHAR PRIMARY KEY,
     Nome VARCHAR NOT NULL,
     CargaHoraria INTEGER,
-    Ementa VARCHAR,
     fk_Departamento_Codigo VARCHAR,
     FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
 );

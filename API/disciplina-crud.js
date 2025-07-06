@@ -1,10 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 
 const nao_achou = "Não existe disciplina com o código fornecido";
 
-router.post("/", async (req, res) => {
+const disciplinaSchema = Joi.object({
+  Codigo: Joi.string().required(),
+  Nome: Joi.string().required(),
+  CargaHoraria: Joi.number().integer().min(1).optional(),
+  fk_Departamento_Codigo: Joi.string().optional()
+});
+
+const disciplinaPatchSchema = disciplinaSchema.fork(
+  Object.keys(disciplinaSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = disciplinaSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const {
     Codigo,
     Nome,
@@ -25,22 +43,22 @@ router.post("/", async (req, res) => {
 
     res.status(201).send("deu bom");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Disciplina");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/:codigo", async (req, res) => {
+router.get("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Disciplina WHERE Codigo = $1",
@@ -50,11 +68,16 @@ router.get("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:codigo", async (req, res) => {
+router.patch("/:codigo", async (req, res, next) => {
+  const { error } = disciplinaPatchSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -78,12 +101,12 @@ router.patch("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Dados da disciplina atualizados com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.delete("/:codigo", async (req, res) => {
+router.delete("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Disciplina WHERE Codigo=$1",
@@ -93,7 +116,7 @@ router.delete("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Disciplina removida com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

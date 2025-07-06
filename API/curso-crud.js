@@ -1,11 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 
 const nao_achou = "Não existe curso com o código fornecido";
 
+const cursoSchema = Joi.object({
+  Codigo: Joi.string().required(),
+  Nome: Joi.string().required(),
+  CargaHorariaTotal: Joi.number().integer().min(1).required(),
+  MinimoSemestres: Joi.number().integer().min(1).optional(),
+  MaximoSemestres: Joi.number().integer().min(1).optional(),
+  Turno: Joi.string().valid("Diurno", "Noturno").optional(),
+  fk_Departamento_Codigo: Joi.string().optional(),
+  fk_Prof_Coord_Matricula: Joi.string().optional(),
+  BonusSalarial: Joi.number().precision(2).min(0).optional()
+});
 
-router.post("/", async (req, res) => {
+const cursoPatchSchema = cursoSchema.fork(
+  Object.keys(cursoSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = cursoSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const {
     Codigo,
     Nome,
@@ -31,22 +53,22 @@ router.post("/", async (req, res) => {
     );
     res.status(201).send("deu bom");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Curso");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/:codigo", async (req, res) => {
+router.get("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Curso WHERE Codigo = $1",
@@ -56,11 +78,16 @@ router.get("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:codigo", async (req, res) => {
+router.patch("/:codigo", async (req, res, next) => {
+  const { error } = cursoPatchSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -84,12 +111,12 @@ router.patch("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Dados do curso atualizados com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.delete("/:codigo", async (req, res) => {
+router.delete("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Curso WHERE Codigo=$1",
@@ -99,7 +126,7 @@ router.delete("/:codigo", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Curso removido com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

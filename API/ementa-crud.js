@@ -1,11 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 
 const nao_achou = "Não existe ementa com o código fornecido";
 
+const ementaSchema = Joi.object({
+  Numero: Joi.number().integer().min(1).required(),
+  Detalhes: Joi.string().optional(),
+  Bibliografia: Joi.string().optional(),
+  Topicos: Joi.string().optional(),
+  Modulos: Joi.string().optional(),
+  Ativa: Joi.boolean().optional(),
+  fk_Disciplina_Codigo: Joi.string().required()
+});
 
-router.post("/", async (req, res) => {
+const ementaPatchSchema = ementaSchema.fork(
+  Object.keys(ementaSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = ementaSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const {
     Numero,
     Detalhes,
@@ -17,7 +37,7 @@ router.post("/", async (req, res) => {
   } = req.body;
 
   const validateDisciplina = await pool.query("SELECT 1 FROM Disciplina WHERE Codigo = $1", [fk_Disciplina_Codigo]);
-  if (fk_Disciplina_Codigo && validateDisciplina.rows.length === 0) {
+  if (validateDisciplina.rows.length === 0) {
     return res.status(400).send("Disciplina não encontrada");
   }
 
@@ -28,22 +48,22 @@ router.post("/", async (req, res) => {
     );
     res.status(201).send("deu bom");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Ementa");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.get("/:numero/:disciplina", async (req, res) => {
+router.get("/:numero/:disciplina", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Ementa WHERE Numero = $1 AND fk_Disciplina_Codigo = $2",
@@ -53,11 +73,16 @@ router.get("/:numero/:disciplina", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:numero/:disciplina", async (req, res) => {
+router.patch("/:numero/:disciplina", async (req, res, next) => {
+  const { error } = ementaPatchSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -81,12 +106,12 @@ router.patch("/:numero/:disciplina", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Dados da ementa atualizados com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
 
-router.delete("/:numero/:disciplina", async (req, res) => {
+router.delete("/:numero/:disciplina", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Ementa WHERE Numero = $1 AND fk_Disciplina_Codigo = $2",
@@ -96,7 +121,7 @@ router.delete("/:numero/:disciplina", async (req, res) => {
       return res.status(404).send(nao_achou);
     res.send("Ementa removida com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
