@@ -66,7 +66,7 @@ router.post("/", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const result = await pool.query("SELECT * FROM Aluno");
+    const result = await pool.query("SELECT *, encode(FotoPerfil, 'base64') AS FotoPerfil FROM Aluno");
     res.json(result.rows);
   } catch (err) {
     next(err);

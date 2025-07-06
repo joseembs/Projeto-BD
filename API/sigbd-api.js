@@ -1,12 +1,15 @@
 const express = require("express");
 const errorHandler = require('./errorHandler');
+const cors = require('cors');
 
 const port = 3000;
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
 
-const professorRoutes = require("./professor/professor-crud");
+const professorRoutes = require("./professor-crud");
 app.use("/professores", professorRoutes);
 
 const alunoRoutes = require("./aluno-crud");
