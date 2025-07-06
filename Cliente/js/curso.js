@@ -23,7 +23,7 @@ function montarFormulario() {
 async function carregarCursos() {
   const cursos = await (await fetch(API_URL)).json();
 
-  renderizarTabela(cursos, campos,
+  renderizarTabela(cursos, campos.map(c => c.toLowerCase()),
     (c) => `
       <button onclick='editarCurso(${JSON.stringify(c).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarCurso("${c.codigo}")'>Excluir</button>
