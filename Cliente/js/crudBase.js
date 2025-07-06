@@ -1,6 +1,7 @@
 export async function salvarOuAtualizar(url, chavePrimaria, objeto) {
+  console.log(`url: ${url}, chave encontrado:`, chavePrimaria, 'Valor:', objeto[chavePrimaria]);
   if (!objeto[chavePrimaria]) {
-    console.warn(`Chave primária "${chavePrimaria}" não foi definida ou está vazia.`);
+    console.log(`Chave primária "${chavePrimaria}" não foi definida ou está vazia.`);
     return;
   }
 
@@ -46,18 +47,16 @@ export function criarInput(id, placeholder, type = 'text') {
   return `<input id="${id}" placeholder="${placeholder}" type="${type}" />`;
 }
 
-export function preencherFormulario(campos, dados) {
+export function preencherFormulario(campos, dados, prefixo = '') {
   campos.forEach(c => {
-    const el = document.getElementById(c);
-    console.log(`Campo: ${c}, ID encontrado:`, el, 'Valor:', dados[c]);
-    if (el) el.value = dados[c] ?? '';
+    const el = document.getElementById(prefixo + c);
+    if (el) el.value = dados[c.toLowerCase()] ?? '';
   });
 }
 
-
-export function limparFormulario(campos) {
+export function limparFormulario(campos, prefixo = '') {
   campos.forEach(c => {
-    const el = document.getElementById(c);
+    const el = document.getElementById(prefixo + c);
     if (el) el.value = '';
   });
 }

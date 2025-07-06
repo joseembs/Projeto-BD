@@ -1,6 +1,7 @@
 import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherFormulario, limparFormulario } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/turmas';
+const prefixo = 'turma-';
 const campos = ['Numero', 'Semestre', 'DataHora', 'Metodologia', 'Capacidade', 'FK_Disciplina_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,12 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarTurmas();
 });
 
-
 function montarFormulario() {
   const div = document.getElementById('form-turma');
   div.classList.add('form-grid');
-  div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
-      `<button id="salvarTurma">Salvar</button><button id="carregarTurma">Carregar</button>`;
+  div.innerHTML = campos.map(c => {
+    // Definindo tipos para campos numéricos e data
+    let tipo = 'text';
+    if (c === 'Capacidade') tipo = 'number';
+    return criarInput(prefixo + c, c, tipo);
+  }).join('') +
+    `<button id="salvarTurma">Salvar</button><button id="carregarTurma">Carregar</button>`;
 
   document.getElementById('salvarTurma').onclick = salvarTurma;
   document.getElementById('carregarTurma').onclick = carregarTurmas;
@@ -24,7 +29,9 @@ function montarFormulario() {
 async function carregarTurmas() {
   const turmas = await (await fetch(API_URL)).json();
 
-  renderizarTabela(turmas, campos.map(c => c.toLowerCase()),
+  renderizarTabela(
+    turmas,
+    campos.map(c => c.toLowerCase()),
     (t) => `
       <button onclick='editarTurma(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarTurma(${t.numero}, "${t.semestre}")'>Excluir</button>
@@ -34,7 +41,7 @@ async function carregarTurmas() {
 }
 
 window.editarTurma = function(turma) {
-  preencherFormulario(campos, turma);
+  preencherFormulario(campos, turma, prefixo);
 };
 
 window.deletarTurma = async function(numero, semestre) {
@@ -46,20 +53,25 @@ window.deletarTurma = async function(numero, semestre) {
 async function salvarTurma() {
   const turma = {};
   for (const campo of campos) {
-    const el = document.getElementById(campo);
-    if (!el || el.value.trim() === '') {
-      //alert('Preencha todos os campos antes de continuar.');
-      //throw new Error('Campo vazio');
-    }
-
-    if (el.type === 'number') {
-      turma[campo] = Number(el.value);
-    } else {
-      turma[campo] = el.value.trim();
+    const el = document.getElementById(prefixo + campo);
+    if (el) {
+      let valor;
+      if (el.type === 'number') {
+        valor = Number(el.value);
+        if (isNaN(valor)) continue; // Ignorar se não for número válido
+      } else {
+        valor = el.value.trim();
+        if (valor === '') continue; // Ignorar string vazia
+      }
+      turma[campo] = valor;
     }
   }
 
-  // Para turma, chave primária composta (Numero + Semestre), então buscar com ambos
+  if (!turma.Numero || !turma.Semestre) {
+    alert('Número e Semestre são obrigatórios');
+    return;
+  }
+
   const urlBusca = `${API_URL}/${turma.Numero}/${turma.Semestre}`;
   const res = await fetch(urlBusca);
 
@@ -77,6 +89,6 @@ async function salvarTurma() {
     });
   }
 
-  limparFormulario(campos);
+  limparFormulario(campos, prefixo);
   carregarTurmas();
 }

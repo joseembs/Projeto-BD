@@ -1,6 +1,7 @@
 import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherFormulario, limparFormulario } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/departamentos';
+const prefixo = 'departamento-';
 const campos = ['Codigo', 'Nome', 'Telefone'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function montarFormulario() {
   const div = document.getElementById('form-departamento');
   div.classList.add('form-grid');
-  div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
+  div.innerHTML = campos.map(c => criarInput(prefixo + c, c)).join('') +
     `<button id="salvarDepartamento">Salvar</button><button id="carregarDepartamento">Carregar</button>`;
 
   document.getElementById('salvarDepartamento').onclick = salvarDepartamento;
@@ -23,7 +24,9 @@ function montarFormulario() {
 async function carregarDepartamentos() {
   const departamentos = await (await fetch(API_URL)).json();
 
-  renderizarTabela(departamentos, campos.map(c => c.toLowerCase()),
+  renderizarTabela(
+    departamentos,
+    campos.map(c => c.toLowerCase()),
     (d) => `
       <button onclick='editarDepartamento(${JSON.stringify(d).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarDepartamento("${d.codigo}")'>Excluir</button>
@@ -32,28 +35,28 @@ async function carregarDepartamentos() {
   );
 }
 
-window.editarDepartamento = function(departamento) {
-  preencherFormulario(campos, departamento);
+window.editarDepartamento = function (departamento) {
+  preencherFormulario(campos, departamento, prefixo);
 };
 
-window.deletarDepartamento = function(codigo) {
-  deletar(API_URL, codigo);
-  carregarDepartamentos();
+window.deletarDepartamento = function (codigo) {
+  deletar(API_URL, codigo, true).then(carregarDepartamentos);
 };
 
 async function salvarDepartamento() {
   const departamento = {};
   for (const campo of campos) {
-    const valor = document.getElementById(campo)?.value?.trim();
-    if (!valor) {
-      //console.error(`Campo ${campo} não preenchido.`);
-      //alert('Preencha todos os campos antes de salvar.');
-      //return;
+    const el = document.getElementById(prefixo + campo);
+    if (el) {
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        departamento[campo] = valor;
+      }
     }
-    departamento[campo] = valor;
   }
 
   await salvarOuAtualizar(API_URL, 'Codigo', departamento);
-  limparFormulario(campos);
+  limparFormulario(campos, prefixo);
   carregarDepartamentos();
 }

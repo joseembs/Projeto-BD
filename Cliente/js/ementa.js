@@ -1,6 +1,7 @@
 import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherFormulario, limparFormulario } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/ementas';
+const prefixo = 'ementa-';
 const campos = ['Numero', 'Detalhes', 'Bibliografia', 'Topicos', 'Modulos', 'Ativa', 'fk_Disciplina_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function montarFormulario() {
   const div = document.getElementById('form-ementa');
   div.classList.add('form-grid');
-  div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
+  div.innerHTML = campos.map(c => criarInput(prefixo + c, c)).join('') +
     `<button id="salvarEmenta">Salvar</button><button id="carregarEmenta">Carregar</button>`;
 
   document.getElementById('salvarEmenta').onclick = salvarEmenta;
@@ -23,7 +24,9 @@ function montarFormulario() {
 async function carregarEmentas() {
   const ementas = await (await fetch(API_URL)).json();
 
-  renderizarTabela(ementas, campos.map(c => c.toLowerCase()),
+  renderizarTabela(
+    ementas,
+    campos.map(c => c.toLowerCase()),
     (e) => `
       <button onclick='editarEmenta(${JSON.stringify(e).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarEmenta("${e.numero}", "${e.fk_disciplina_codigo}")'>Excluir</button>
@@ -32,28 +35,27 @@ async function carregarEmentas() {
   );
 }
 
-window.editarEmenta = function(ementa) {
-  preencherFormulario(campos, ementa);
+window.editarEmenta = function (ementa) {
+  preencherFormulario(campos, ementa, prefixo);
 };
 
-window.deletarEmenta = async function(numero, disciplina) {
-  if (!confirm('Deseja realmente excluir?')) return;
-  await fetch(`${API_URL}/${numero}/${disciplina}`, { method: 'DELETE' });
-  carregarEmentas();
+window.deletarEmenta = async function (numero, disciplina) {
+  deletar(`${API_URL}/${numero}/${disciplina}`, '', false).then(carregarEmentas);
 };
 
 async function salvarEmenta() {
   const ementa = {};
   for (const campo of campos) {
-    const valor = document.getElementById(campo)?.value?.trim();
-    if (!valor) {
-      //alert('Preencha todos os campos antes de continuar.');
-      //throw new Error('Campo vazio');
+    const el = document.getElementById(prefixo + campo);
+    if (el) {
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        ementa[campo] = valor;
+      }
     }
-    ementa[campo] = valor;
   }
 
-  // Montar a URL para buscar se a ementa existe (por chave composta)
   const urlBusca = `${API_URL}/${ementa.Numero}/${ementa.fk_Disciplina_Codigo}`;
   const res = await fetch(urlBusca);
 
@@ -71,6 +73,6 @@ async function salvarEmenta() {
     });
   }
 
-  limparFormulario(campos);
+  limparFormulario(campos, prefixo);
   carregarEmentas();
 }

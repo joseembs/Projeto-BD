@@ -1,6 +1,7 @@
 import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherFormulario, limparFormulario } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/locais';
+const prefixo = 'local-';
 const campos = ['Codigo', 'Campus', 'Bloco', 'Sala'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function montarFormulario() {
   const div = document.getElementById('form-local');
   div.classList.add('form-grid');
-  div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
+  div.innerHTML = campos.map(c => criarInput(prefixo + c, c)).join('') +
     `<button id="salvarLocal">Salvar</button><button id="carregarLocal">Carregar</button>`;
 
   document.getElementById('salvarLocal').onclick = salvarLocal;
@@ -23,7 +24,9 @@ function montarFormulario() {
 async function carregarLocais() {
   const locais = await (await fetch(API_URL)).json();
 
-  renderizarTabela(locais, campos.map(c => c.toLowerCase()),
+  renderizarTabela(
+    locais,
+    campos.map(c => c.toLowerCase()),
     (l) => `
       <button onclick='editarLocal(${JSON.stringify(l).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarLocal("${l.codigo}")'>Excluir</button>
@@ -33,26 +36,27 @@ async function carregarLocais() {
 }
 
 window.editarLocal = function(local) {
-  preencherFormulario(campos, local);
+  preencherFormulario(campos, local, prefixo);
 };
 
 window.deletarLocal = function(codigo) {
-  deletar(API_URL, codigo);
-  carregarLocais();
+  deletar(API_URL, codigo, true).then(carregarLocais);
 };
 
 async function salvarLocal() {
   const local = {};
   for (const campo of campos) {
-    const valor = document.getElementById(campo)?.value?.trim();
-    if (!valor) {
-      //alert('Preencha todos os campos antes de continuar.');
-      //throw new Error('Campo vazio');
+    const el = document.getElementById(prefixo + campo);
+    if (el) {
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        local[campo] = valor;
+      }
     }
-    local[campo] = valor;
   }
 
   await salvarOuAtualizar(API_URL, 'Codigo', local);
-  limparFormulario(campos);
+  limparFormulario(campos, prefixo);
   carregarLocais();
 }
