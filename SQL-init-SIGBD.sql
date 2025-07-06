@@ -41,7 +41,7 @@ CREATE TABLE Disciplina (
     Nome VARCHAR NOT NULL,
     CargaHoraria INTEGER,
     fk_Departamento_Codigo VARCHAR,
-    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
+    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo) ON DELETE CASCADE
 );
 
 CREATE TABLE Curso (
@@ -54,8 +54,8 @@ CREATE TABLE Curso (
     fk_Departamento_Codigo VARCHAR,
     fk_Prof_Coord_Matricula VARCHAR UNIQUE,
     BonusSalarial DECIMAL(12,2),
-    FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE,
-    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo)
+    FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula),
+    FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo) ON DELETE CASCADE
 );
 
 CREATE TABLE Local (
@@ -73,7 +73,7 @@ CREATE TABLE Turma (
     Capacidade INTEGER NOT NULL,
     fk_Disciplina_Codigo VARCHAR,
     PRIMARY KEY (Numero, Semestre),
-    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo)
+    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo) ON DELETE CASCADE
 );
 
 CREATE TABLE Ementa (
@@ -85,15 +85,7 @@ CREATE TABLE Ementa (
     Ativa BOOLEAN,
     fk_Disciplina_Codigo VARCHAR NOT NULL,
     PRIMARY KEY (Numero, fk_Disciplina_Codigo),
-    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo)
-);
-
-CREATE TABLE PreRequisitos (
-    fk_Disciplina VARCHAR,
-    fk_Disciplina_Requisito VARCHAR,
-    PRIMARY KEY (fk_Disciplina, fk_Disciplina_Requisito),
-    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo),
-    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo)
+    FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo) ON DELETE CASCADE
 );
 
 CREATE TABLE ExisteEm (
@@ -105,21 +97,12 @@ CREATE TABLE ExisteEm (
     FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
 );
 
-CREATE TABLE Ensina (
-    fk_Prof_Coord_Matricula VARCHAR,
-    fk_Turma_Numero INTEGER,
-    fk_Turma_Semestre VARCHAR,
-    PRIMARY KEY (fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre),
-    FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula),
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
-);
-
 CREATE TABLE Cursando (
     fk_Curso_Codigo VARCHAR,
     fk_Aluno_Matricula VARCHAR,
     PRIMARY KEY (fk_Curso_Codigo, fk_Aluno_Matricula),
-    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso (Codigo),
-    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula)
+    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso (Codigo) ON DELETE CASCADE,
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
 );
 
 CREATE TABLE HistoricoFazParte (
@@ -158,14 +141,14 @@ CREATE TABLE Ensina (
     fk_Turma_Numero INTEGER,
     fk_Turma_Semestre VARCHAR,
     PRIMARY KEY (fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre),
-    FOREIGN KEY (fk_Prof_Matricula) REFERENCES Professor (Matricula),
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+    FOREIGN KEY (fk_Prof_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE,
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre) ON DELETE CASCADE
 );
 
 CREATE TABLE PreRequisitos (
     fk_Disciplina VARCHAR NOT NULL,
     fk_Disciplina_Requisito VARCHAR NOT NULL,
     PRIMARY KEY (fk_Disciplina, fk_Disciplina_Requisito),
-    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo),
-    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo)
+    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo) ON DELETE CASCADE,
+    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo) ON DELETE CASCADE
 );
