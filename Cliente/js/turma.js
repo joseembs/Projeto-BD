@@ -48,8 +48,8 @@ async function salvarTurma() {
   for (const campo of campos) {
     const el = document.getElementById(campo);
     if (!el || el.value.trim() === '') {
-      alert('Preencha todos os campos antes de continuar.');
-      throw new Error('Campo vazio');
+      //alert('Preencha todos os campos antes de continuar.');
+      //throw new Error('Campo vazio');
     }
 
     if (el.type === 'number') {

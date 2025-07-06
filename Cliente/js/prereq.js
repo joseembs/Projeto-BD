@@ -41,8 +41,8 @@ async function salvarPreRequisito() {
  for (const campo of campos) {
     const valor = document.getElementById(campo)?.value?.trim();
     if (!valor) {
-      alert('Preencha todos os campos antes de salvar.');
-      return;
+      //alert('Preencha todos os campos antes de continuar.');
+      //throw new Error('Campo vazio');
     }
     prereq[campo] = valor;
   }
