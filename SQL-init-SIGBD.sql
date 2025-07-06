@@ -88,14 +88,6 @@ CREATE TABLE Ementa (
     FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo) ON DELETE CASCADE
 );
 
-CREATE TABLE PreRequisitos (
-    fk_Disciplina VARCHAR,
-    fk_Disciplina_Requisito VARCHAR,
-    PRIMARY KEY (fk_Disciplina, fk_Disciplina_Requisito),
-    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo),
-    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo)
-);
-
 CREATE TABLE ExisteEm (
     fk_Local_Codigo VARCHAR,
     fk_Turma_Numero INTEGER,
