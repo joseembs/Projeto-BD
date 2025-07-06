@@ -153,3 +153,20 @@ CREATE TABLE Coordenador (
     fk_Professor_Matricula VARCHAR UNIQUE,
     FOREIGN KEY (fk_Professor_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE
 );
+
+CREATE TABLE Ensina (
+    fk_Prof_Matricula VARCHAR,
+    fk_Turma_Numero INTEGER,
+    fk_Turma_Semestre VARCHAR,
+    PRIMARY KEY (fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre),
+    FOREIGN KEY (fk_Prof_Matricula) REFERENCES Professor (Matricula),
+    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+);
+
+CREATE TABLE PreRequisitos (
+    fk_Disciplina VARCHAR NOT NULL,
+    fk_Disciplina_Requisito VARCHAR NOT NULL,
+    PRIMARY KEY (fk_Disciplina, fk_Disciplina_Requisito),
+    FOREIGN KEY (fk_Disciplina) REFERENCES Disciplina (Codigo),
+    FOREIGN KEY (fk_Disciplina_Requisito) REFERENCES Disciplina (Codigo)
+);
