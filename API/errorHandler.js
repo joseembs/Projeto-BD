@@ -7,7 +7,7 @@ function errorHandler(err, req, res, next) {
 
   // Outros erros
   console.error(err);
-  res.status(500).json({ erro: "Erro inesperado no servidor" });
+  res.status(500).json({ erro: err.message || "Erro inesperado no servidor" });
 }
 
 function handlePgError(err) {

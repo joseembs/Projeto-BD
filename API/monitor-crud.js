@@ -1,21 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 
-router.post("/", async (req, res) => {
+const monitorSchema = Joi.object({
+  Codigo: Joi.string().required(),
+  Tipo: Joi.string().valid('Não remunerado', 'Remunerado').required(),
+  Salario: Joi.number().precision(2).min(0).optional(),
+  fk_Aluno_Matricula: Joi.string().length(9).pattern(/^\d+$/).required(),
+});
+
+const monitorPatchSchema = monitorSchema.fork(
+  Object.keys(monitorSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = monitorSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const {
     Codigo,
     Tipo,
-    Salario,   
+    Salario,
+    fk_Aluno_Matricula   
   } = req.body;
   try {
     await pool.query(
-      "INSERT INTO Monitor (Codigo, Tipo, Salario) VALUES ($1,$2,$3)",
-      [Codigo, Tipo, Salario]
+      "INSERT INTO Monitor (Codigo, Tipo, Salario, fk_Aluno_Matricula) VALUES ($1,$2,$3,$4)",
+      [Codigo, Tipo, Salario, fk_Aluno_Matricula]
     );
     res.status(201).send("Monitor cadastrado com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -24,7 +43,7 @@ router.get("/", async (req, res) => {
     const result = await pool.query("SELECT * FROM Monitor");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -38,11 +57,16 @@ router.get("/:codigo", async (req, res) => {
       return res.status(404).send("Nenhum monitor encontrado com esse código");
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:matricula", async (req, res) => {
+router.patch("/:codigo", async (req, res) => {
+  const { error } = monitorPatchSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -55,7 +79,7 @@ router.patch("/:matricula", async (req, res) => {
   if (campos.length === 0) {
     return res.status(400).send("Nada para atualizar");
   }
-  valores.push(req.params.matricula);
+  valores.push(req.params.codigo);
 
   try {
     const result = await pool.query(
@@ -63,10 +87,10 @@ router.patch("/:matricula", async (req, res) => {
       valores
     );
     if (result.rowCount === 0)
-      return res.status(404).send("Nenhum Monitor encontrado com essa matrícula");
+      return res.status(404).send("Nenhum Monitor encontrado com esse código");
     res.status(201).send("Monitor atualizado com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -80,7 +104,7 @@ router.delete("/:codigo", async (req, res) => {
       return res.status(404).send("Nenhum Monitor encontrado com esse código");
     res.status(201).send("Monitor deletado com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

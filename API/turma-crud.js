@@ -1,8 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db-setup");
+const Joi = require('joi');
 
-router.post("/", async (req, res) => {
+const turmaSchema = Joi.object({
+  Numero: Joi.number().integer().min(1).required(),
+  Semestre: Joi.string().required(),
+  DataHora: Joi.string().required(), // YYYY-MM-DD
+  Metodologia: Joi.string().optional(),
+  Capacidade: Joi.number().integer().min(1).required(),
+  FK_Disciplina_Codigo: Joi.string().required()
+});
+
+const turmaPatchSchema = turmaSchema.fork(
+  Object.keys(turmaSchema.describe().keys),
+  field => field.optional()
+);
+
+router.post("/", async (req, res, next) => {
+  const { error } = turmaSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const {
     Numero,
     Semestre,
@@ -18,20 +38,20 @@ router.post("/", async (req, res) => {
     );
     res.status(201).send("Turma cadastrada com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Turma");
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/:numero/:semestre", async (req, res) => {
+router.get("/:numero/:semestre", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Turma WHERE Numero = $1 AND Semestre = $2",
@@ -41,11 +61,16 @@ router.get("/:numero/:semestre", async (req, res) => {
       return res.status(404).send("Nenhuma turma encontrada com esses dados");
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.patch("/:numero/:semestre", async (req, res) => {
+router.patch("/:numero/:semestre", async (req, res, next) => {
+  const { error } = turmaPatchSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+
   const campos = [];
   const valores = [];
   let i = 1;
@@ -69,11 +94,11 @@ router.patch("/:numero/:semestre", async (req, res) => {
       return res.status(404).send("Nenhuma turma encontrada com esses dados");
     res.send("Dados atualizados com sucesso");
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.delete("/:numero/:semestre", async (req, res) => {
+router.delete("/:numero/:semestre", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Turma WHERE Numero = $1 AND Semestre = $2",
@@ -83,7 +108,7 @@ router.delete("/:numero/:semestre", async (req, res) => {
       return res.status(404).send("Nenhuma turma encontrada com esses dados");
     res.send("Turma deletada com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

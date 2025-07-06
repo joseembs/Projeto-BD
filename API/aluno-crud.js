@@ -11,12 +11,10 @@ const alunoSchema = Joi.object({
   Email: Joi.string().email().required(),
   DataDeNascimento: Joi.date().iso().optional(), // "YYYY-MM-DD"
   Idade: Joi.number().integer().min(0).optional(),
-  Status: Joi.string().required(),
-  // Joi.string().valid('Ativo', 'Inativo', 'Trancado').required()
-  IRA: Joi.number().precision(4).min(0).max(1).optional(),
+  Status: Joi.string().required(), // ou Joi.string().valid('Ativo', 'Inativo', 'Trancado').required()
+  IRA: Joi.number().precision(4).min(0).max(5).optional(),
   Integralizacao: Joi.number().precision(2).min(0).max(100).optional(),
-  FotoPerfil: Joi.string().base64().optional(),
-  // FotoPerfil: Joi.binary().optional(),
+  FotoPerfil: Joi.string().base64().optional(), // ou Joi.binary().optional(),
 });
 
 const alunoPatchSchema = alunoSchema.fork(
@@ -27,7 +25,7 @@ const alunoPatchSchema = alunoSchema.fork(
 router.post("/", async (req, res, next) => {
   const { error } = alunoSchema.validate(req.body);
   if (error) {
-    return res.status(400).send(error.details[0].message);
+    return next(error);
   }
 
   const {
@@ -92,7 +90,7 @@ router.get("/:matricula", async (req, res, next) => {
 router.patch("/:matricula", async (req, res, next) => {
   const { error } = alunoPatchSchema.validate(req.body);
   if (error) {
-    return res.status(400).send(error.details[0].message);
+    return next(error);
   }
 
   const campos = [];

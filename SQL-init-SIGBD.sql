@@ -12,11 +12,10 @@ CREATE TABLE Aluno (
 );
 
 CREATE TABLE Monitor (
-    Codigo VARCHAR,
+    Codigo VARCHAR PRIMARY KEY,
     Tipo VARCHAR NOT NULL,
     Salario DECIMAL(12,2),
     fk_Aluno_Matricula CHAR(9),
-    PRIMARY KEY (Codigo, fk_Aluno_Matricula),
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
 );
 
@@ -70,7 +69,7 @@ CREATE TABLE Local (
 CREATE TABLE Turma (
     Numero INTEGER NOT NULL,
     Semestre VARCHAR NOT NULL,
-    DataHora VARCHAR,
+    DataHora VARCHAR NOT NULL,
     Metodologia VARCHAR,
     Capacidade INTEGER NOT NULL,
     fk_Disciplina_Codigo VARCHAR,
