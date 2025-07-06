@@ -2,7 +2,7 @@ import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherForm
 
 const API_URL = 'http://localhost:3000/prereqs';
 const prefixo = 'prereq-';
-const campos = ['fk_Disciplina_Codigo', 'fk_PreRequisito_Codigo'];
+const campos = ['fk_Disciplina', 'fk_Disciplina_Requisito'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-prerequisitos');
@@ -43,30 +43,44 @@ async function carregarPreRequisitos() {
 
 async function salvarPreRequisito() {
   const prereq = {};
+  const prefixo = 'prereq-';
+
   for (const campo of campos) {
     const el = document.getElementById(prefixo + campo);
     if (el) {
-      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
-      if ((typeof valor === 'string' && valor !== '') ||
-          (typeof valor === 'number' && !isNaN(valor))) {
-        prereq[campo] = valor;
+      let valor;
+      if (el.type === 'number') {
+        valor = Number(el.value);
+        if (isNaN(valor)) continue;
+      } else {
+        valor = el.value.trim();
+        if (valor === '') continue;
       }
+      prereq[campo] = valor;
     }
   }
 
-  try {
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(prereq)
-    });
-
-    limparFormulario(campos, prefixo);
-    carregarPreRequisitos();
-  } catch (err) {
-    console.error('Erro ao salvar pré-requisito:', err);
+  // Monta objeto sem prefixo para enviar ao backend
+  const dados = {};
+  for (const campo of campos) {
+    const chave = campo.replace(prefixo, '');
+    if (prereq[campo] !== undefined) {
+      dados[chave] = prereq[campo];
+    }
   }
+
+  console.log("Objeto enviado para o POST:", dados);
+
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados)
+  });
+
+  limparFormulario(campos, prefixo);
+  carregarPreRequisitos();
 }
+
 
 window.editarPreRequisito = function (item) {
   preencherFormulario(campos, item, prefixo);

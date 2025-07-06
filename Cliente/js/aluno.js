@@ -2,7 +2,7 @@ import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherForm
 
 const API_URL = 'http://localhost:3000/alunos';
 const prefixo = 'aluno-';
-const campos = ['Matricula', 'CPF', 'Nome', 'Email', 'DataDeNascimento', 'Idade', 'Status', 'IRA', 'Integralizacao', 'FotoPerfil'];
+const campos = ['Matricula', 'CPF', 'Nome', 'Email', 'DataDeNascimento', 'Idade', 'Status', 'IRA', 'Integralizacao', 'fk_Curso_Codigo', 'FotoPerfil'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-aluno');

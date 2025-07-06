@@ -5,7 +5,7 @@ const Joi = require("joi");
 
 
 const ensinaSchema = Joi.object({
-  fk_Prof_Coord_Matricula: Joi.string().required(),
+  fk_Prof_Matricula: Joi.string().required(),
   fk_Turma_Numero: Joi.number().integer().required(),
   fk_Turma_Semestre: Joi.string().required(),
 });
@@ -17,12 +17,12 @@ router.post("/", async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  const { fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre } = req.body;
+  const { fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre } = req.body;
 
   try {
     await pool.query(
-      "INSERT INTO Ensina (fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre) VALUES ($1, $2, $3)",
-      [fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre]
+      "INSERT INTO Ensina (fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre) VALUES ($1, $2, $3)",
+      [fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre]
     );
     res.status(201).send("Relação criada com sucesso.");
   } catch (err) {
@@ -44,7 +44,7 @@ router.get("/", async (req, res) => {
 router.get("/professor/:matricula", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM Ensina WHERE fk_Prof_Coord_Matricula = $1",
+      "SELECT * FROM Ensina WHERE fk_Prof_Matricula = $1",
       [req.params.matricula]
     );
     if (result.rows.length === 0) {
@@ -78,12 +78,12 @@ router.delete("/", async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  const { fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre } = req.body;
+  const { fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre } = req.body;
 
   try {
     const result = await pool.query(
-      "DELETE FROM Ensina WHERE fk_Prof_Coord_Matricula = $1 AND fk_Turma_Numero = $2 AND fk_Turma_Semestre = $3",
-      [fk_Prof_Coord_Matricula, fk_Turma_Numero, fk_Turma_Semestre]
+      "DELETE FROM Ensina WHERE fk_Prof_Matricula = $1 AND fk_Turma_Numero = $2 AND fk_Turma_Semestre = $3",
+      [fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre]
     );
     if (result.rowCount === 0) {
       return res.status(404).send("Nenhuma relação encontrada para excluir.");

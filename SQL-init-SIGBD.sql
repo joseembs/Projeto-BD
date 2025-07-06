@@ -1,24 +1,3 @@
-CREATE TABLE Aluno (
-    Matricula CHAR(9) PRIMARY KEY,
-    CPF CHAR(11) UNIQUE NOT NULL,
-    Nome VARCHAR NOT NULL,
-    Email VARCHAR UNIQUE NOT NULL,
-    DataDeNascimento DATE,
-    Idade INTEGER,
-    Status VARCHAR NOT NULL,
-    IRA DECIMAL(5,4),
-    Integralizacao DECIMAL(5,2),
-    FotoPerfil BYTEA
-);
-
-CREATE TABLE Monitor (
-    Codigo VARCHAR PRIMARY KEY,
-    Tipo VARCHAR NOT NULL,
-    Salario DECIMAL(12,2),
-    fk_Aluno_Matricula CHAR(9),
-    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
-);
-
 CREATE TABLE Professor (
     Matricula VARCHAR PRIMARY KEY,
     CPF CHAR(11) UNIQUE NOT NULL,
@@ -56,6 +35,29 @@ CREATE TABLE Curso (
     BonusSalarial DECIMAL(12,2),
     FOREIGN KEY (fk_Prof_Coord_Matricula) REFERENCES Professor (Matricula),
     FOREIGN KEY (fk_Departamento_Codigo) REFERENCES Departamento (Codigo) ON DELETE CASCADE
+);
+
+CREATE TABLE Aluno (
+    Matricula CHAR(9) PRIMARY KEY,
+    CPF CHAR(11) UNIQUE NOT NULL,
+    Nome VARCHAR NOT NULL,
+    Email VARCHAR UNIQUE NOT NULL,
+    DataDeNascimento DATE,
+    Idade INTEGER,
+    Status VARCHAR NOT NULL,
+    IRA DECIMAL(5,4),
+    Integralizacao DECIMAL(5,2),
+    fk_Curso_Codigo VARCHAR,
+    FotoPerfil BYTEA,
+	FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso (Codigo)
+);
+
+CREATE TABLE Monitor (
+    Codigo VARCHAR PRIMARY KEY,
+    Tipo VARCHAR NOT NULL,
+    Salario DECIMAL(12,2),
+    fk_Aluno_Matricula CHAR(9),
+    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
 );
 
 CREATE TABLE Local (
@@ -97,14 +99,6 @@ CREATE TABLE ExisteEm (
     FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
 );
 
-CREATE TABLE Cursando (
-    fk_Curso_Codigo VARCHAR,
-    fk_Aluno_Matricula VARCHAR,
-    PRIMARY KEY (fk_Curso_Codigo, fk_Aluno_Matricula),
-    FOREIGN KEY (fk_Curso_Codigo) REFERENCES Curso (Codigo) ON DELETE CASCADE,
-    FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
-);
-
 CREATE TABLE HistoricoFazParte (
     fk_Turma_Numero INTEGER,
     fk_Turma_Semestre VARCHAR,
@@ -127,13 +121,6 @@ CREATE TABLE FilaSeMatricula (
     fk_Turma_Semestre VARCHAR,
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula),
     FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
-);
-
-CREATE TABLE Coordenador (
-    Codigo VARCHAR PRIMARY KEY,
-    BonusSalarial DECIMAL(12,2),
-    fk_Professor_Matricula VARCHAR UNIQUE,
-    FOREIGN KEY (fk_Professor_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE
 );
 
 CREATE TABLE Ensina (

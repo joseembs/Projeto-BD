@@ -15,6 +15,7 @@ const alunoSchema = Joi.object({
   IRA: Joi.number().precision(4).min(0).max(5).optional(),
   Integralizacao: Joi.number().precision(2).min(0).max(100).optional(),
   FotoPerfil: Joi.string().base64().optional(), // ou Joi.binary().optional(),
+  fk_Curso_Codigo: Joi.string().required()
 });
 
 const alunoPatchSchema = alunoSchema.fork(
@@ -38,7 +39,8 @@ router.post("/", async (req, res, next) => {
     Status,
     IRA,
     Integralizacao,
-    FotoPerfil,
+    fk_Curso_Codigo,
+    FotoPerfil
   } = req.body;
 
   let FotoBuffer;
@@ -55,8 +57,8 @@ router.post("/", async (req, res, next) => {
 
   try {
     await pool.query(
-      "INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, FotoPerfil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
-      [Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, FotoBuffer]
+      "INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, fk_Curso_Codigo, FotoPerfil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+      [Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, fk_Curso_Codigo, FotoBuffer]
     );
     res.status(201).send("Aluno cadastrado com sucesso");
   } catch (err) {

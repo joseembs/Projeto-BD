@@ -8,72 +8,6 @@
 <body>
   <h1>Sistema Integrado de Gestão de Bancos de Dados</h1>
 
-  <!-- Seção de Alunos -->
-  <div class="section" id="section-alunos">
-    <h2>Alunos</h2>
-    <div id="form-aluno"></div>
-    <table id="tabela-aluno">
-      <thead>
-        <tr>
-          <th>Matricula</th>
-          <th>CPF</th>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>DataDeNascimento</th>
-          <th>Idade</th>
-          <th>Status</th>
-          <th>IRA</th>
-          <th>Integralizacao</th>
-          <th>FotoPerfil</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Seção de Turmas -->
-  <div class="section" id="section-turmas">
-    <h2>Turmas</h2>
-    <div id="form-turma"></div>
-    <table id="tabela-turma">
-      <thead>
-        <tr>
-          <th>Numero</th>
-          <th>Semestre</th>
-          <th>DataHora</th>
-          <th>Metodologia</th>
-          <th>Capacidade</th>
-          <th>FK_Disciplina_Codigo</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Seção de Professores -->
-  <div class="section" id="section-professores">
-    <h2>Professores</h2>
-    <div id="form-professor"></div>
-    <table id="tabela-professor">
-      <thead>
-        <tr>
-          <th>Matricula</th>
-          <th>CPF</th>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>DataNascimento</th>
-          <th>Idade</th>
-          <th>Status</th>
-          <th>Salario</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
   <!-- Seção de Departamentos -->
   <div class="section" id="section-departamento">
     <h2>Departamentos</h2>
@@ -84,29 +18,6 @@
           <th>Codigo</th>
           <th>Nome</th>
           <th>Telefone</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Seção de Cursos -->
-  <div class="section" id="section-cursos">
-    <h2>Cursos</h2>
-    <div id="form-curso"></div>
-    <table id="tabela-curso">
-      <thead>
-        <tr>
-          <th>Codigo</th>
-          <th>Nome</th>
-          <th>CargaHorariaTotal</th>
-          <th>MinimoSemestres</th>
-          <th>MaximoSemestres</th>
-          <th>Turno</th>
-          <th>fk_Departamento_Codigo</th>
-          <th>fk_Prof_Coord_Matricula</th>
-          <th>BonusSalarial</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -153,17 +64,21 @@
     </table>
   </div>
 
-  <!-- Seção de Local -->
-  <div class="section" id="section-locais">
-    <h2>Locais</h2>
-    <div id="form-local"></div>
-    <table id="tabela-local">
+  <!-- Seção de Professores -->
+  <div class="section" id="section-professores">
+    <h2>Professores</h2>
+    <div id="form-professor"></div>
+    <table id="tabela-professor">
       <thead>
         <tr>
-          <th>Codigo</th>
-          <th>Campus</th>
-          <th>Bloco</th>
-          <th>Sala</th>
+          <th>Matricula</th>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>DataNascimento</th>
+          <th>Idade</th>
+          <th>Status</th>
+          <th>Salario</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -171,17 +86,42 @@
     </table>
   </div>
 
-  <!-- Seção de Monitor -->
-  <div class="section" id="section-monitores">
-    <h2>Monitores</h2>
-    <div id="form-monitor"></div>
-    <table id="tabela-monitor">
+  <!-- Seção de Cursos -->
+  <div class="section" id="section-cursos">
+    <h2>Cursos</h2>
+    <div id="form-curso"></div>
+    <table id="tabela-curso">
       <thead>
         <tr>
           <th>Codigo</th>
-          <th>Tipo</th>
-          <th>Salario</th>
-          <th>fk_Aluno_Matricula</th>
+          <th>Nome</th>
+          <th>CargaHorariaTotal</th>
+          <th>MinimoSemestres</th>
+          <th>MaximoSemestres</th>
+          <th>Turno</th>
+          <th>fk_Departamento_Codigo</th>
+          <th>fk_Prof_Coord_Matricula</th>
+          <th>BonusSalarial</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Turmas -->
+  <div class="section" id="section-turmas">
+    <h2>Turmas</h2>
+    <div id="form-turma"></div>
+    <table id="tabela-turma">
+      <thead>
+        <tr>
+          <th>Numero</th>
+          <th>Semestre</th>
+          <th>DataHora</th>
+          <th>Metodologia</th>
+          <th>Capacidade</th>
+          <th>FK_Disciplina_Codigo</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -222,18 +162,17 @@
     </table>
   </div>
 
-  <!-- Seção de Histórico -->
-  <div class="section" id="section-historico">
-    <h2>Histórico</h2>
-    <div id="form-historico"></div>
-    <table id="tabela-historico">
+  <!-- Seção de Local -->
+  <div class="section" id="section-locais">
+    <h2>Locais</h2>
+    <div id="form-local"></div>
+    <table id="tabela-local">
       <thead>
         <tr>
-          <th>Turma Nº</th>
-          <th>Semestre</th>
-          <th>Matrícula</th>
-          <th>Status</th>
-          <th>Menção</th>
+          <th>Codigo</th>
+          <th>Campus</th>
+          <th>Bloco</th>
+          <th>Sala</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -251,6 +190,68 @@
           <th>Código Local</th>
           <th>Turma Nº</th>
           <th>Semestre</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Alunos -->
+  <div class="section" id="section-alunos">
+    <h2>Alunos</h2>
+    <div id="form-aluno"></div>
+    <table id="tabela-aluno">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>DataDeNascimento</th>
+          <th>Idade</th>
+          <th>Status</th>
+          <th>IRA</th>
+          <th>Integralizacao</th>
+          <th>fk_Curso_Codigo</th>
+          <th>FotoPerfil</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Monitor -->
+  <div class="section" id="section-monitores">
+    <h2>Monitores</h2>
+    <div id="form-monitor"></div>
+    <table id="tabela-monitor">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Tipo</th>
+          <th>Salario</th>
+          <th>fk_Aluno_Matricula</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Histórico -->
+  <div class="section" id="section-historico">
+    <h2>Histórico</h2>
+    <div id="form-historico"></div>
+    <table id="tabela-historico">
+      <thead>
+        <tr>
+          <th>Turma Nº</th>
+          <th>Semestre</th>
+          <th>Matrícula</th>
+          <th>Status</th>
+          <th>Menção</th>
           <th>Ações</th>
         </tr>
       </thead>
