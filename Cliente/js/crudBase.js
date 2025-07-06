@@ -1,19 +1,20 @@
 export async function salvarOuAtualizar(url, chavePrimaria, objeto) {
-  if (!objeto || !chavePrimaria || !objeto[chavePrimaria]) {
-    console.warn(`Chave primária "${chavePrimaria}" não foi definida no objeto.`);
+  if (!objeto[chavePrimaria]) {
+    console.warn(`Chave primária "${chavePrimaria}" não foi definida ou está vazia.`);
     return;
   }
+
   let method = 'POST';
-  let urlFinal = `${url}/${objeto[chavePrimaria]}`;
+  let urlFinal = url;
 
   try {
-    const res = await fetch(urlFinal);
-    if (res.ok) {
+    const res = await fetch(`${url}/${objeto[chavePrimaria]}`);
+    if (res.status !== 404) {
       method = 'PATCH';
+      urlFinal = `${url}/${objeto[chavePrimaria]}`;
     }
   } catch (err) {
-    // Aqui o erro pode ser de rede, não apenas 404
-    console.warn('Erro ao verificar existência:', err);
+    console.warn('Erro ao verificar existência do recurso:', err);
   }
 
   await fetch(urlFinal, {
@@ -48,9 +49,11 @@ export function criarInput(id, placeholder, type = 'text') {
 export function preencherFormulario(campos, dados) {
   campos.forEach(c => {
     const el = document.getElementById(c);
-    if (el) el.value = dados[c.toLowerCase()] ?? '';
+    console.log(`Campo: ${c}, ID encontrado:`, el, 'Valor:', dados[c]);
+    if (el) el.value = dados[c] ?? '';
   });
 }
+
 
 export function limparFormulario(campos) {
   campos.forEach(c => {

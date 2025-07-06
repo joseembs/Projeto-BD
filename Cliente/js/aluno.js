@@ -26,7 +26,7 @@ function montarFormulario() {
   }).join('') +
     `<button id="salvarAluno">Salvar</button><button id="carregarAluno">Carregar</button>`;
 
-  document.getElementById('salvarAluno').onclick = salvar;
+  document.getElementById('salvarAluno').onclick = salvarAluno;
   document.getElementById('carregarAluno').onclick = carregarAlunos;
 }
 
@@ -35,7 +35,7 @@ async function carregarAlunos() {
 
   renderizarTabela(lista, campos.map(c => c.toLowerCase()),
     (t) => `
-      <button onclick='editar(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarAluno(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarAluno("${t.matricula}")'>Excluir</button>
     `, 
     'tabela-aluno',
@@ -48,7 +48,7 @@ async function carregarAlunos() {
   );
 }
 
-window.editar = function (aluno) {
+window.editarAluno = function (aluno) {
   preencherFormulario(campos.filter(c => c !== 'FotoPerfil'), aluno);
 };
 
@@ -56,19 +56,27 @@ window.deletarAluno = function (matricula) {
   deletar(API_URL, matricula, true).then(carregarAlunos);
 };
 
-async function salvar() {
+async function salvarAluno() {
   const aluno = {};
   const fileInput = document.getElementById('FotoPerfil');
   const file = fileInput?.files?.[0];
 
-  campos.forEach(c => {
-    if (c !== 'FotoPerfil') {
-      aluno[c] = document.getElementById(c).value;
+  for (const campo of campos) {
+    const valor = document.getElementById(campo)?.value?.trim();
+    if (campo !== 'FotoPerfil' && !valor) {
+      alert('Preencha todos os campos antes de salvar.');
+      return;
     }
-  });
+    if (campo !== 'FotoPerfil') {
+      aluno[campo] = valor;
+    }
+  }
 
   if (file) {
-    aluno.FotoPerfil = await toBase64(file);
+    let base64String = await toBase64(file);
+    // Remove o prefixo data:image/...;base64,
+    base64String = base64String.replace(/^data:image\/\w+;base64,/, '');
+    aluno.FotoPerfil = base64String;
   }
 
   await salvarOuAtualizar(API_URL, 'Matricula', aluno);

@@ -17,7 +17,7 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
       `<button id="salvarTurma">Salvar</button><button id="carregarTurma">Carregar</button>`;
 
-  document.getElementById('salvarTurma').onclick = salvar;
+  document.getElementById('salvarTurma').onclick = salvarTurma;
   document.getElementById('carregarTurma').onclick = carregarTurmas;
 }
 
@@ -26,14 +26,14 @@ async function carregarTurmas() {
 
   renderizarTabela(turmas, campos.map(c => c.toLowerCase()),
     (t) => `
-      <button onclick='editar(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarTurma(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarTurma(${t.numero}, "${t.semestre}")'>Excluir</button>
     `,
     'tabela-turma'
   );
 }
 
-window.editar = function(turma) {
+window.editarTurma = function(turma) {
   preencherFormulario(campos, turma);
 };
 
@@ -43,18 +43,21 @@ window.deletarTurma = async function(numero, semestre) {
   carregarTurmas();
 };
 
-async function salvar() {
+async function salvarTurma() {
   const turma = {};
-  campos.forEach(c => {
-    const el = document.getElementById(c);
-    if(el) {
-      if(el.type === 'number') {
-        turma[c] = el.value === '' ? null : Number(el.value);
-      } else {
-        turma[c] = el.value;
-      }
+  for (const campo of campos) {
+    const el = document.getElementById(campo);
+    if (!el || el.value.trim() === '') {
+      alert('Preencha todos os campos antes de continuar.');
+      throw new Error('Campo vazio');
     }
-  });
+
+    if (el.type === 'number') {
+      turma[campo] = Number(el.value);
+    } else {
+      turma[campo] = el.value.trim();
+    }
+  }
 
   // Para turma, chave primária composta (Numero + Semestre), então buscar com ambos
   const urlBusca = `${API_URL}/${turma.Numero}/${turma.Semestre}`;

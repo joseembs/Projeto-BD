@@ -7,20 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-prerequisitos');
   if (!div) return;
   montarFormulario();
-  carregar();
+  carregarPreRequisito();
 });
 
 function montarFormulario() {
   const div = document.getElementById('form-prerequisitos');
   div.classList.add('form-grid');
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
-      `<button id="salvarPrereq">Salvar</button><button id="carregarPrereq">Carregar</button>`;
+      `<button id="salvarPreRequisito">Salvar</button><button id="carregarPreRequisito">Carregar</button>`;
 
-  document.getElementById('salvarPrereq').onclick = salvar;
-  document.getElementById('carregarPrereq').onclick = carregar;
+  document.getElementById('salvarPreRequisito').onclick = salvarPreRequisito;
+  document.getElementById('carregarPreRequisito').onclick = carregarPreRequisito;
 }
 
-async function carregar() {
+async function carregarPreRequisito() {
   try {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error(await res.text());
@@ -35,25 +35,32 @@ async function carregar() {
   }
 }
 
-async function salvar() {
-  const objeto = {
-    fk_Disciplina: document.getElementById('fk_Disciplina').value,
-    fk_Disciplina_Requisito: document.getElementById('fk_Disciplina_Requisito').value
-  };
+async function salvarPreRequisito() {
+  const prereq = {};
+
+ for (const campo of campos) {
+    const valor = document.getElementById(campo)?.value?.trim();
+    if (!valor) {
+      alert('Preencha todos os campos antes de salvar.');
+      return;
+    }
+    prereq[campo] = valor;
+  }
 
   try {
     await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(objeto)
+      body: JSON.stringify(prereq)
     });
 
     limparFormulario(campos);
-    carregar();
+    carregarPreRequisito();
   } catch (err) {
     console.error('Erro ao salvar pré-requisito:', err);
   }
 }
+
 
 window.editarPreRequisito = function (item) {
   preencherFormulario(campos, item);
@@ -80,7 +87,7 @@ window.deletarPreRequisito = async function (item) {
 // Execução inicial
 if (document.readyState !== 'loading') {
   montarFormulario();
-  carregar();
+  carregarPreRequisito();
 } else {
   document.addEventListener('DOMContentLoaded', () => {
     montarFormulario();

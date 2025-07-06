@@ -16,7 +16,7 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
     `<button id="salvarDisciplina">Salvar</button><button id="carregarDisciplina">Carregar</button>`;
 
-  document.getElementById('salvarDisciplina').onclick = salvar;
+  document.getElementById('salvarDisciplina').onclick = salvarDisciplina;
   document.getElementById('carregarDisciplina').onclick = carregarDisciplinas;
 }
 
@@ -25,14 +25,14 @@ async function carregarDisciplinas() {
 
   renderizarTabela(disciplinas, campos.map(c => c.toLowerCase()),
     (d) => `
-      <button onclick='editar(${JSON.stringify(d).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarDisciplina(${JSON.stringify(d).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarDisciplina("${d.codigo}")'>Excluir</button>
     `,
     'tabela-disciplina'
   );
 }
 
-window.editar = function(disciplina) {
+window.editarDisciplina = function(disciplina) {
   preencherFormulario(campos, disciplina);
 };
 
@@ -41,11 +41,16 @@ window.deletarDisciplina = function(codigo) {
   carregarDisciplinas();
 };
 
-async function salvar() {
+async function salvarDisciplina() {
   const disciplina = {};
-  campos.forEach(c => {
-    disciplina[c] = document.getElementById(c).value;
-  });
+  for (const campo of campos) {
+    const valor = document.getElementById(campo)?.value?.trim();
+    if (!valor) {
+      alert('Preencha todos os campos antes de salvar.');
+      return;
+    }
+    disciplina[campo] = valor;
+  }
 
   await salvarOuAtualizar(API_URL, 'Codigo', disciplina);
   limparFormulario(campos);

@@ -16,23 +16,23 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
     `<button id="salvarMonitor">Salvar</button><button id="carregarMonitor">Carregar</button>`;
 
-  document.getElementById('salvarMonitor').onclick = salvar;
+  document.getElementById('salvarMonitor').onclick = salvarMonitor;
   document.getElementById('carregarMonitor').onclick = carregarMonitores;
 }
 
 async function carregarMonitores() {
   const monitores = await (await fetch(API_URL)).json();
 
-  renderizarTabela(monitores, campos.map(c => c.toLowerCase()), 
+  renderizarTabela(monitores, campos.map(c => c.toLowerCase()),
     (m) => `
-      <button onclick='editar(${JSON.stringify(m).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarMonitor(${JSON.stringify(m).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarMonitor("${m.codigo}")'>Excluir</button>
     `,
     'tabela-monitor'
   );
 }
 
-window.editar = function(monitor) {
+window.editarMonitor = function(monitor) {
   preencherFormulario(campos, monitor);
 };
 
@@ -41,16 +41,21 @@ window.deletarMonitor = function(codigo) {
   carregarMonitores();
 };
 
-async function salvar() {
+async function salvarMonitor() {
   const monitor = {};
-  campos.forEach(c => {
-    const el = document.getElementById(c);
-    if(el.type === 'number') {
-      monitor[c] = el.value ? parseFloat(el.value) : null;
-    } else {
-      monitor[c] = el.value;
+  for (const campo of campos) {
+    const el = document.getElementById(campo);
+    if (!el || el.value.trim() === '') {
+      //alert('Preencha todos os campos antes de continuar.');
+      //throw new Error('Campo vazio');
     }
-  });
+    console.log(`Campo: ${campo}, ID encontrado:`, el, 'Valor:', el.value);
+    if (el.type === 'number') {
+      monitor[campo] = Number(el.value);
+    } else {
+      monitor[campo] = el.value.trim();
+    }
+  }
 
   await salvarOuAtualizar(API_URL, 'Codigo', monitor);
   limparFormulario(campos);

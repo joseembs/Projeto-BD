@@ -16,7 +16,7 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
     `<button id="salvarDepartamento">Salvar</button><button id="carregarDepartamento">Carregar</button>`;
 
-  document.getElementById('salvarDepartamento').onclick = salvar;
+  document.getElementById('salvarDepartamento').onclick = salvarDepartamento;
   document.getElementById('carregarDepartamento').onclick = carregarDepartamentos;
 }
 
@@ -25,14 +25,14 @@ async function carregarDepartamentos() {
 
   renderizarTabela(departamentos, campos.map(c => c.toLowerCase()),
     (d) => `
-      <button onclick='editar(${JSON.stringify(d).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarDepartamento(${JSON.stringify(d).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarDepartamento("${d.codigo}")'>Excluir</button>
     `,
     'tabela-departamento'
   );
 }
 
-window.editar = function(departamento) {
+window.editarDepartamento = function(departamento) {
   preencherFormulario(campos, departamento);
 };
 
@@ -41,11 +41,17 @@ window.deletarDepartamento = function(codigo) {
   carregarDepartamentos();
 };
 
-async function salvar() {
+async function salvarDepartamento() {
   const departamento = {};
-  campos.forEach(c => {
-    departamento[c] = document.getElementById(c).value;
-  });
+  for (const campo of campos) {
+    const valor = document.getElementById(campo)?.value?.trim();
+    if (!valor) {
+      //console.error(`Campo ${campo} não preenchido.`);
+      //alert('Preencha todos os campos antes de salvar.');
+      //return;
+    }
+    departamento[campo] = valor;
+  }
 
   await salvarOuAtualizar(API_URL, 'Codigo', departamento);
   limparFormulario(campos);

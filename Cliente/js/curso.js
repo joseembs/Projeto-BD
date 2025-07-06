@@ -16,23 +16,23 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c, c.includes('Semestres') || c.includes('Carga') || c.includes('Bonus') ? 'number' : 'text')).join('') +
     `<button id="salvarCurso">Salvar</button><button id="carregarCurso">Carregar</button>`;
 
-  document.getElementById('salvarCurso').onclick = salvar;
+  document.getElementById('salvarCurso').onclick = salvarCurso;
   document.getElementById('carregarCurso').onclick = carregarCursos;
 }
 
 async function carregarCursos() {
   const cursos = await (await fetch(API_URL)).json();
 
-  renderizarTabela(cursos, campos.map(c => c.toLowerCase()),
+  renderizarTabela(cursos, campos,
     (c) => `
-      <button onclick='editar(${JSON.stringify(c).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarCurso(${JSON.stringify(c).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarCurso("${c.codigo}")'>Excluir</button>
     `,
     'tabela-curso'
   );
 }
 
-window.editar = function(curso) {
+window.editarCurso = function(curso) {
   preencherFormulario(campos, curso);
 };
 
@@ -41,18 +41,21 @@ window.deletarCurso = function(codigo) {
   carregarCursos();
 };
 
-async function salvar() {
+async function salvarCurso() {
   const curso = {};
-  campos.forEach(c => {
-    const el = document.getElementById(c);
-    if(el) {
-      if(el.type === 'number') {
-        curso[c] = el.value === '' ? null : Number(el.value);
-      } else {
-        curso[c] = el.value;
-      }
+  for (const campo of campos) {
+    const el = document.getElementById(campo);
+    if (!el || el.value.trim() === '') {
+      alert('Preencha todos os campos antes de continuar.');
+      throw new Error('Campo vazio');
     }
-  });
+
+    if (el.type === 'number') {
+      curso[campo] = Number(el.value);
+    } else {
+      curso[campo] = el.value.trim();
+    }
+  }
 
   await salvarOuAtualizar(API_URL, 'Codigo', curso);
   limparFormulario(campos);

@@ -17,7 +17,7 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
       `<button id="salvarProfessor">Salvar</button><button id="carregarProfessor">Carregar</button>`;
 
-  document.getElementById('salvarProfessor').onclick = salvar;
+  document.getElementById('salvarProfessor').onclick = salvarProfessor;
   document.getElementById('carregarProfessor').onclick = carregarProfessores;
 }
 
@@ -26,14 +26,14 @@ async function carregarProfessores() {
 
   renderizarTabela(professores, campos.map(c => c.toLowerCase()),
     (p) => `
-      <button onclick='editar(${JSON.stringify(p).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarProfessor(${JSON.stringify(p).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarProfessor("${p.matricula}")'>Excluir</button>
     `,
     'tabela-professor'
   );
 }
 
-window.editar = function(professor) {
+window.editarProfessor = function(professor) {
   preencherFormulario(campos, professor);
 };
 
@@ -42,18 +42,21 @@ window.deletarProfessor = function(matricula) {
   carregarProfessores();
 };
 
-async function salvar() {
+async function salvarProfessor() {
   const professor = {};
-  campos.forEach(c => {
-    const el = document.getElementById(c);
-    if(el) {
-      if(el.type === 'number') {
-        professor[c] = el.value === '' ? null : Number(el.value);
-      } else {
-        professor[c] = el.value;
-      }
+  for (const campo of campos) {
+    const el = document.getElementById(campo);
+    if (!el || el.value.trim() === '') {
+      alert('Preencha todos os campos antes de continuar.');
+      throw new Error('Campo vazio');
     }
-  });
+
+    if (el.type === 'number') {
+      professor[campo] = Number(el.value);
+    } else {
+      professor[campo] = el.value.trim();
+    }
+  }
 
   await salvarOuAtualizar(API_URL, 'Matricula', professor);
   limparFormulario(campos);

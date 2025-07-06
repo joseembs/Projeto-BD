@@ -16,7 +16,7 @@ function montarFormulario() {
   div.innerHTML = campos.map(c => criarInput(c, c)).join('') +
     `<button id="salvarEmenta">Salvar</button><button id="carregarEmenta">Carregar</button>`;
 
-  document.getElementById('salvarEmenta').onclick = salvar;
+  document.getElementById('salvarEmenta').onclick = salvarEmenta;
   document.getElementById('carregarEmenta').onclick = carregarEmentas;
 }
 
@@ -25,14 +25,14 @@ async function carregarEmentas() {
 
   renderizarTabela(ementas, campos.map(c => c.toLowerCase()),
     (e) => `
-      <button onclick='editar(${JSON.stringify(e).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='editarEmenta(${JSON.stringify(e).replace(/"/g, '&quot;')})'>Editar</button>
       <button onclick='deletarEmenta("${e.numero}", "${e.fk_disciplina_codigo}")'>Excluir</button>
     `,
     'tabela-ementa'
   );
 }
 
-window.editar = function(ementa) {
+window.editarEmenta = function(ementa) {
   preencherFormulario(campos, ementa);
 };
 
@@ -42,11 +42,16 @@ window.deletarEmenta = async function(numero, disciplina) {
   carregarEmentas();
 };
 
-async function salvar() {
+async function salvarEmenta() {
   const ementa = {};
-  campos.forEach(c => {
-    ementa[c] = document.getElementById(c).value;
-  });
+  for (const campo of campos) {
+    const valor = document.getElementById(campo)?.value?.trim();
+    if (!valor) {
+      alert('Preencha todos os campos antes de salvar.');
+      return;
+    }
+    ementa[campo] = valor;
+  }
 
   // Montar a URL para buscar se a ementa existe (por chave composta)
   const urlBusca = `${API_URL}/${ementa.Numero}/${ementa.fk_Disciplina_Codigo}`;
