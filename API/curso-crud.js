@@ -17,7 +17,14 @@ router.post("/", async (req, res) => {
     fk_Prof_Coord_Matricula,
     BonusSalarial
   } = req.body;
+
   try {
+    const validateDepartamento = await pool.query("SELECT 1 FROM Departamento WHERE Codigo = $1", [fk_Departamento_Codigo]);
+    if (fk_Departamento_Codigo && validateDepartamento.rows.length === 0) return res.status(400).send("Departamento não encontrado");
+
+    const validateCoordenador = await pool.query("SELECT 1 FROM Professor WHERE Matricula = $1", [fk_Prof_Coord_Matricula]);
+    if (fk_Prof_Coord_Matricula && validateCoordenador.rows.length === 0) return res.status(400).send("Professor Coordenador não encontrado");
+    
     await pool.query(
       "INSERT INTO Curso (Codigo, Nome, CargaHorariaTotal, MinimoSemestres, MaximoSemestres, Turno, fk_Departamento_Codigo, fk_Prof_Coord_Matricula, BonusSalarial) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
       [Codigo, Nome, CargaHorariaTotal, MinimoSemestres, MaximoSemestres, Turno, fk_Departamento_Codigo, fk_Prof_Coord_Matricula, BonusSalarial]

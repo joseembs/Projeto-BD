@@ -15,6 +15,12 @@ router.post("/", async (req, res) => {
     Ativa,
     fk_Disciplina_Codigo
   } = req.body;
+
+  const validateDisciplina = await pool.query("SELECT 1 FROM Disciplina WHERE Codigo = $1", [fk_Disciplina_Codigo]);
+  if (fk_Disciplina_Codigo && validateDisciplina.rows.length === 0) {
+    return res.status(400).send("Disciplina não encontrada");
+  }
+
   try {
     await pool.query(
       "INSERT INTO Ementa (Numero, Detalhes, Bibliografia, Topicos, Modulos, Ativa, fk_Disciplina_Codigo) VALUES ($1,$2,$3,$4,$5,$6,$7)",

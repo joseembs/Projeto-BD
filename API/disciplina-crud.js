@@ -4,7 +4,6 @@ const pool = require("./db-setup");
 
 const nao_achou = "Não existe disciplina com o código fornecido";
 
-
 router.post("/", async (req, res) => {
   const {
     Codigo,
@@ -12,11 +11,18 @@ router.post("/", async (req, res) => {
     CargaHoraria,
     fk_Departamento_Codigo
   } = req.body;
+
   try {
+    if (fk_Departamento_Codigo) {
+      const validateDepartamento = await pool.query("SELECT 1 FROM Departamento WHERE Codigo = $1", [fk_Departamento_Codigo]);
+      if (validateDepartamento.rows.length === 0) return res.status(400).send("Departamento não encontrado");
+    }
+
     await pool.query(
       "INSERT INTO Disciplina (Codigo, Nome, CargaHoraria, fk_Departamento_Codigo) VALUES ($1,$2,$3,$4)",
       [Codigo, Nome, CargaHoraria, fk_Departamento_Codigo]
     );
+
     res.status(201).send("deu bom");
   } catch (err) {
     res.status(400).json({ error: err.message });
