@@ -108,7 +108,7 @@ CREATE TABLE Cursando (
 CREATE TABLE HistoricoFazParte (
     fk_Turma_Numero INTEGER,
     fk_Turma_Semestre VARCHAR,
-    fk_Aluno_Matricula CHAR(11),
+    fk_Aluno_Matricula CHAR(9),
     Status VARCHAR,
     Mencao VARCHAR,
     PRIMARY KEY (fk_Turma_Numero, fk_Turma_Semestre, fk_Aluno_Matricula),
@@ -122,7 +122,7 @@ CREATE TABLE FilaSeMatricula (
     Posicao INTEGER NOT NULL,
     Periodo VARCHAR NOT NULL,
     Preferencia INTEGER NOT NULL,
-    fk_Aluno_Matricula CHAR(11),
+    fk_Aluno_Matricula CHAR(9),
     fk_Turma_Numero INTEGER,
     fk_Turma_Semestre VARCHAR,
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula),

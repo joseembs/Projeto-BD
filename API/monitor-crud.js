@@ -47,7 +47,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:codigo", async (req, res) => {
+router.get("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "SELECT * FROM Monitor WHERE Codigo = $1",
