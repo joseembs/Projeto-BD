@@ -38,7 +38,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM Monitor");
     res.json(result.rows);
@@ -61,7 +61,7 @@ router.get("/:codigo", async (req, res, next) => {
   }
 });
 
-router.patch("/:codigo", async (req, res) => {
+router.patch("/:codigo", async (req, res, next) => {
   const { error } = monitorPatchSchema.validate(req.body);
   if (error) {
     return next(error);
@@ -94,7 +94,7 @@ router.patch("/:codigo", async (req, res) => {
   }
 });
 
-router.delete("/:codigo", async (req, res) => {
+router.delete("/:codigo", async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Monitor WHERE Codigo=$1",
