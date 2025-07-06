@@ -9,7 +9,7 @@ const professorSchema = Joi.object({
   CPF: Joi.string().length(11).pattern(/^\d+$/).required(),
   Nome: Joi.string().min(2).required(),
   Email: Joi.string().email().required(),
-  DataNascimento: Joi.date().iso().optional(),
+  DataNascimento: Joi.date().optional(),
   Idade: Joi.number().integer().min(0).optional(),
   Status: Joi.string().required(),
   Salario: Joi.number().precision(2).optional(),

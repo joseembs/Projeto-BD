@@ -1,0 +1,66 @@
+body {
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+input, select {
+    display: block;
+    margin: 5px 0;
+    padding: 5px;
+    width: 300px;
+}
+
+table {
+  border-collapse: collapse; /* Faz as bordas se fundirem em uma só */
+  width: 100%;
+  margin-bottom: 2rem; /* espaço entre tabelas */
+  font-family: Arial, sans-serif;
+}
+
+th, td {
+  border: 1px solid #999; /* borda cinza entre células */
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #eee; /* fundo cinza claro para o cabeçalho */
+}
+
+tbody tr:hover {
+  background-color: #f5f5f5; /* efeito hover na linha */
+}
+
+img {
+    max-width: 60px;
+}
+
+.section {
+  border-top: 2px solid #ccc;
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+h2 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.form-grid {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-grid > div {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}

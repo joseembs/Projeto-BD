@@ -33,6 +33,15 @@ app.use("/disciplinas", disciplinaRoutes);
 const ementaRoutes = require("./ementa-crud");
 app.use("/ementas", ementaRoutes);
 
+const localRoutes = require("./local-crud");
+app.use("/locais", localRoutes);
+
+const prereqRoutes = require("./prereq-crud");
+app.use("/prereqs", prereqRoutes);
+
+const ensinaRoutes = require("./ensina-crud");
+app.use("/ensina", ensinaRoutes);
+
 // joga node API/sigbd-api.js no terminal para rodar
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);

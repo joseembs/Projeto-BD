@@ -8,5 +8,14 @@ const pool = new Pool({
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
 });
+/*
+const originalQuery = pool.query.bind(pool);
 
+pool.query = async (...args) => {
+  const [sql, params] = args;
+  console.log('SQL EXECUTADO:', sql);
+  if (params) console.log('PARAMETROS:', params);
+  return originalQuery(...args);
+};
+*/
 module.exports = pool;

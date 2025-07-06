@@ -7,9 +7,9 @@ const fs = require('fs');
 const alunoSchema = Joi.object({
   Matricula: Joi.string().length(9).pattern(/^\d+$/).required(),
   CPF: Joi.string().length(11).pattern(/^\d+$/).required(),
-  Nome: Joi.string().min(2).required(),
+  Nome: Joi.string().min(1).required(),
   Email: Joi.string().email().required(),
-  DataDeNascimento: Joi.date().iso().optional(), // "YYYY-MM-DD"
+  DataDeNascimento: Joi.date().optional(), // "YYYY-MM-DD"
   Idade: Joi.number().integer().min(0).optional(),
   Status: Joi.string().required(), // ou Joi.string().valid('Ativo', 'Inativo', 'Trancado').required()
   IRA: Joi.number().precision(4).min(0).max(5).optional(),

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>SIGBD</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <h1>Sistema Integrado de Gestão de Bancos de Dados</h1>
+
+  <!-- Seção de Alunos -->
+  <div class="section" id="section-alunos">
+    <h2>Alunos</h2>
+    <div id="form-aluno"></div>
+    <table id="tabela-aluno">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>DataDeNascimento</th>
+          <th>Idade</th>
+          <th>Status</th>
+          <th>IRA</th>
+          <th>Integralizacao</th>
+          <th>FotoPerfil</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Turmas -->
+  <div class="section" id="section-turmas">
+    <h2>Turmas</h2>
+    <div id="form-turma"></div>
+    <table id="tabela-turma">
+      <thead>
+        <tr>
+          <th>Numero</th>
+          <th>Semestre</th>
+          <th>DataHora</th>
+          <th>Metodologia</th>
+          <th>Capacidade</th>
+          <th>FK_Disciplina_Codigo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Professores -->
+  <div class="section" id="section-professores">
+    <h2>Professores</h2>
+    <div id="form-professor"></div>
+    <table id="tabela-professor">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>DataNascimento</th>
+          <th>Idade</th>
+          <th>Status</th>
+          <th>Salario</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Departamentos -->
+  <div class="section" id="section-departamento">
+    <h2>Departamentos</h2>
+    <div id="form-departamento"></div>
+    <table id="tabela-departamento">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Cursos -->
+  <div class="section" id="section-cursos">
+    <h2>Cursos</h2>
+    <div id="form-curso"></div>
+    <table id="tabela-curso">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nome</th>
+          <th>CargaHorariaTotal</th>
+          <th>MinimoSemestres</th>
+          <th>MaximoSemestres</th>
+          <th>Turno</th>
+          <th>fk_Departamento_Codigo</th>
+          <th>fk_Prof_Coord_Matricula</th>
+          <th>BonusSalarial</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Disciplina -->
+  <div class="section" id="section-disciplinas">
+    <h2>Disciplinas</h2>
+    <div id="form-disciplina"></div>
+    <table id="tabela-disciplina">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nome</th>
+          <th>CargaHoraria</th>
+          <th>fk_Departamento_Codigo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Ementa -->
+  <div class="section" id="section-ementas">
+    <h2>Ementas</h2>
+    <div id="form-ementa"></div>
+    <table id="tabela-ementa">
+      <thead>
+        <tr>
+          <th>Numero</th>
+          <th>Detalhes</th>
+          <th>Bibliografia</th>
+          <th>Topicos</th>
+          <th>Modulos</th>
+          <th>Ativa</th>
+          <th>fk_Disciplina_Codigo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Local -->
+  <div class="section" id="section-locais">
+    <h2>Locais</h2>
+    <div id="form-local"></div>
+    <table id="tabela-local">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Campus</th>
+          <th>Bloco</th>
+          <th>Sala</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Monitor -->
+  <div class="section" id="section-monitores">
+    <h2>Monitores</h2>
+    <div id="form-monitor"></div>
+    <table id="tabela-monitor">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Tipo</th>
+          <th>Salario</th>
+          <th>fk_Aluno_Matricula</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Ensina -->
+  <div class="section" id="section-ensina">
+    <h2>Ensina</h2>
+    <div id="form-ensina"></div>
+    <table id="tabela-ensina">
+      <thead>
+        <tr>
+          <th>Professor</th>
+          <th>Turma Nº</th>
+          <th>Semestre</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Seção de Pré-Requisitos -->
+  <div class="section" id="section-prerequisitos">
+    <h2>Pré-Requisitos</h2>
+    <div id="form-prerequisitos"></div>
+    <table id="tabela-prerequisitos">
+      <thead>
+        <tr>
+          <th>Disciplina</th>
+          <th>Pré-Requisito</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/aluno.js"></script>
+  <script type="module" src="js/turma.js"></script>
+  <script type="module" src="js/professor.js"></script>
+  <script type="module" src="js/departamento.js"></script>
+  <script type="module" src="js/curso.js"></script>
+  <script type="module" src="js/disciplina.js"></script>
+  <script type="module" src="js/ementa.js"></script>
+  <script type="module" src="js/local.js"></script>
+  <script type="module" src="js/monitor.js"></script>
+  <script type="module" src="js/ensina.js"></script>
+  <script type="module" src="js/prereq.js"></script>
+</body>
+</html>
