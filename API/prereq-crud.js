@@ -51,6 +51,21 @@ router.get("/:disciplina", async (req, res) => {
   }
 });
 
+router.get("/requisito/:disciplina", async (req, res) => {
+    try {
+      const result = await pool.query(
+        "SELECT * FROM PreRequisitos WHERE fk_Disciplina_Requisito = $1",
+        [req.params.disciplina]
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).send("Nenhuma disciplina encontrada que tenha esta como pré-requisito.");
+      }
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
 router.delete("/", async (req, res) => {
   const { error } = preRequisitosSchema.validate(req.body);
   if (error) {
