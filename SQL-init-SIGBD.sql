@@ -91,21 +91,19 @@ CREATE TABLE Ementa (
 
 CREATE TABLE ExisteEm (
     fk_Local_Codigo VARCHAR,
-    fk_Turma_Numero INTEGER,
-    fk_Turma_Semestre VARCHAR,
-    PRIMARY KEY (fk_Local_Codigo, fk_Turma_Numero, fk_Turma_Semestre),
+    fk_Turma_Codigo VARCHAR,
+    PRIMARY KEY (fk_Local_Codigo, fk_Turma_Codigo),
     FOREIGN KEY (fk_Local_Codigo) REFERENCES Local (Codigo),
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo)
 );
 
 CREATE TABLE HistoricoFazParte (
-    fk_Turma_Numero INTEGER,
-    fk_Turma_Semestre VARCHAR,
+    fk_Turma_Codigo VARCHAR,
     fk_Aluno_Matricula CHAR(9),
     Status VARCHAR,
     Mencao VARCHAR,
-    PRIMARY KEY (fk_Turma_Numero, fk_Turma_Semestre, fk_Aluno_Matricula),
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre),
+    PRIMARY KEY (fk_Turma_Codigo, fk_Aluno_Matricula),
+    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo),
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula)
 );
 
@@ -116,19 +114,17 @@ CREATE TABLE FilaSeMatricula (
     Periodo VARCHAR NOT NULL,
     Preferencia INTEGER NOT NULL,
     fk_Aluno_Matricula CHAR(9),
-    fk_Turma_Numero INTEGER,
-    fk_Turma_Semestre VARCHAR,
+    fk_Turma_Codigo VARCHAR,
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula),
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre)
+    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo)
 );
 
 CREATE TABLE Ensina (
     fk_Prof_Matricula VARCHAR,
-    fk_Turma_Numero INTEGER,
-    fk_Turma_Semestre VARCHAR,
-    PRIMARY KEY (fk_Prof_Matricula, fk_Turma_Numero, fk_Turma_Semestre),
+    fk_Turma_Codigo VARCHAR,
+    PRIMARY KEY (fk_Prof_Matricula, fk_Turma_Codigo),
     FOREIGN KEY (fk_Prof_Matricula) REFERENCES Professor (Matricula) ON DELETE CASCADE,
-    FOREIGN KEY (fk_Turma_Numero, fk_Turma_Semestre) REFERENCES Turma (Numero, Semestre) ON DELETE CASCADE
+    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo) ON DELETE CASCADE
 );
 
 CREATE TABLE PreRequisitos (

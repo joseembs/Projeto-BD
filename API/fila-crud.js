@@ -10,15 +10,14 @@ const filaSchema = Joi.object({
   Periodo: Joi.string().required(),
   Preferencia: Joi.number().integer().required(),
   fk_Aluno_Matricula: Joi.string().length(9).optional(),
-  fk_Turma_Numero: Joi.number().integer().optional(),
-  fk_Turma_Semestre: Joi.string().optional(),
+  fk_Turma_Codigo: Joi.string().optional(),
 });
 
 const filaPatchSchema = filaSchema.fork(
   ["Codigo"],
   (field) => field.forbidden()
 ).fork(
-  ["Prioridade", "Posicao", "Periodo", "Preferencia", "fk_Aluno_Matricula", "fk_Turma_Numero", "fk_Turma_Semestre"],
+  ["Prioridade", "Posicao", "Periodo", "Preferencia", "fk_Aluno_Matricula", "fk_Turma_Codigo"],
   (field) => field.optional()
 );
 
@@ -26,17 +25,17 @@ router.post("/", async (req, res, next) => {
   const { error } = filaSchema.validate(req.body);
   if (error) return next(error);
 
-  const { Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Numero, fk_Turma_Semestre } = req.body;
+  const { Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo } = req.body;
 
   try {
     await pool.query(
       `INSERT INTO FilaSeMatricula 
-       (Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Numero, fk_Turma_Semestre) 
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Numero, fk_Turma_Semestre]
+       (Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo) 
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo]
     );
 
-    reorganizarFilaDaTurma(req.body.fk_Turma_Numero, req.body.fk_Turma_Semestre)
+    reorganizarFilaDaTurma(req.body.fk_Turma_Codigo)
 
     res.status(201).send("Posição na fila criada com sucesso");
   } catch (err) {
@@ -76,7 +75,7 @@ router.patch("/:Codigo", async (req, res, next) => {
   const valores = [];
   let idx = 1;
 
-  for (const key of ["Prioridade", "Posicao", "Periodo", "Preferencia", "fk_Aluno_Matricula", "fk_Turma_Numero", "fk_Turma_Semestre"]) {
+  for (const key of ["Prioridade", "Posicao", "Periodo", "Preferencia", "fk_Aluno_Matricula", "fk_Turma_Codigo"]) {
     if (key in req.body) {
       campos.push(`${key} = $${idx}`);
       valores.push(req.body[key]);
@@ -96,7 +95,7 @@ router.patch("/:Codigo", async (req, res, next) => {
     if (result.rowCount === 0)
       return res.status(404).send("Posição na fila não encontrada para atualização");
 
-    reorganizarFilaDaTurma(req.body.fk_Turma_Numero, req.body.fk_Turma_Semestre)
+    reorganizarFilaDaTurma(req.body.fk_Turma_Codigo)
 
     res.send("Posição na fila atualizada com sucesso");
   } catch (err) {
@@ -119,15 +118,15 @@ router.delete("/:Codigo", async (req, res, next) => {
   }
 });
 
-async function reorganizarFilaDaTurma(numero, semestre) {
+async function reorganizarFilaDaTurma(codigo) {
   try {
     // Buscar entradas da Fila da turma com dados do aluno
     const { rows: filas } = await pool.query(`
       SELECT f.*, a.Integralizacao, a.IRA
       FROM FilaSeMatricula f
       LEFT JOIN Aluno a ON f.fk_Aluno_Matricula = a.Matricula
-      WHERE f.fk_Turma_Numero = $1 AND f.fk_Turma_Semestre = $2
-    `, [numero, semestre]);
+      WHERE f.fk_Turma_Codigo = $1
+    `, [codigo]);
 
     if (filas.length === 0) return;
 
@@ -164,7 +163,7 @@ async function reorganizarFilaDaTurma(numero, semestre) {
       }
     }
 
-    console.log(`Fila da turma ${numero}/${semestre} reorganizada.`);
+    console.log(`Fila da turma ${codigo} reorganizada.`);
   } catch (err) {
     console.error('Erro ao reorganizar fila:', err);
   }
