@@ -68,13 +68,12 @@ CREATE TABLE Local (
 );
 
 CREATE TABLE Turma (
-    Numero INTEGER NOT NULL,
+    Codigo VARCHAR PRIMARY KEY,
     Semestre VARCHAR NOT NULL,
     DataHora VARCHAR NOT NULL,
     Metodologia VARCHAR,
     Capacidade INTEGER NOT NULL,
     fk_Disciplina_Codigo VARCHAR,
-    PRIMARY KEY (Numero, Semestre),
     FOREIGN KEY (fk_Disciplina_Codigo) REFERENCES Disciplina (Codigo) ON DELETE CASCADE
 );
 
