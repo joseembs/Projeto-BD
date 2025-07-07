@@ -2,7 +2,7 @@ import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherForm
 
 const API_URL = 'http://localhost:3000/turmas';
 const prefixo = 'turma-';
-const campos = ['Codigo', 'Numero', 'Semestre', 'DataHora', 'Metodologia', 'Capacidade', 'FK_Disciplina_Codigo'];
+const campos = ['Codigo', 'Semestre', 'DataHora', 'Metodologia', 'Capacidade', 'FK_Disciplina_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-turma');
