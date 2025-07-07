@@ -2,7 +2,7 @@ import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherForm
 
 const API_URL = 'http://localhost:3000/existeem';
 const prefixo = 'existeem-';
-const campos = ['fk_Local_Codigo', 'fk_Turma_Numero', 'fk_Turma_Semestre'];
+const campos = ['fk_Local_Codigo', 'fk_Turma_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-existeem');
@@ -25,25 +25,25 @@ function montarFormulario() {
 }
 
 async function carregarExisteEm() {
-  const lista = await (await fetch(API_URL)).json();
+  const lista = await fetch(API_URL).then(r => r.json()).catch(() => []);
   renderizarTabela(
-      lista,
-      campos.map(c => c.toLowerCase()),
-      (t) => `
-        <button onclick='editarExisteEm(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
-        <button onclick='deletarExisteEm("${t.fk_Local_Codigo}", ${t.fk_Turma_Numero}, "${t.fk_Turma_Semestre}")'>Excluir</button>
-      `,
-      'tabela-existeem'
-    );
+    lista,
+    campos.map(c => c.toLowerCase()),
+    (item) => `
+      <button onclick='editarExisteEm(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='deletarExisteEm("${item.fk_Local_Codigo}", "${item.fk_Turma_Codigo}")'>Excluir</button>
+    `,
+    'tabela-existeem'
+  );
 }
 
 window.editarExisteEm = function (item) {
   preencherFormulario(campos, item, prefixo);
 };
 
-window.deletarExisteEm = async function (fk_Local_Codigo, fk_Turma_Numero, fk_Turma_Semestre) {
+window.deletarExisteEm = async function (fk_Local_Codigo, fk_Turma_Codigo) {
   if (!confirm('Deseja realmente excluir?')) return;
-  await fetch(`${API_URL}/${fk_Local_Codigo}/${fk_Turma_Numero}/${fk_Turma_Semestre}`, {
+  await fetch(`${API_URL}/${fk_Local_Codigo}/${fk_Turma_Codigo}`, {
     method: 'DELETE',
   });
   carregarExisteEm();
@@ -54,42 +54,22 @@ async function salvarExisteEm() {
   for (const campo of campos) {
     const el = document.getElementById(prefixo + campo);
     if (el) {
-      let valor;
-      if (el.type === 'number') {
-        valor = Number(el.value);
-        if (isNaN(valor)) continue; // Ignorar número inválido
-      } else {
-        valor = el.value.trim();
-        if (valor === '') continue; // Ignorar string vazia
-      }
+      const valor = el.value.trim();
+      if (valor === '') continue;
       registro[campo] = valor;
     }
   }
 
-  // Validação: todos os campos da chave primária são obrigatórios
-  if (!registro.fk_Local_Codigo || registro.fk_Turma_Numero === undefined || !registro.fk_Turma_Semestre) {
-    alert('Todos os campos da chave primária são obrigatórios');
+  if (!registro.fk_Local_Codigo || !registro.fk_Turma_Codigo) {
+    alert('Todos os campos são obrigatórios');
     return;
   }
 
-  const urlBusca = `${API_URL}/${registro.fk_Local_Codigo}/${registro.fk_Turma_Numero}/${registro.fk_Turma_Semestre}`;
-  const res = await fetch(urlBusca);
-
-  if (res.ok) {
-    // Registro existe: faz PATCH
-    await fetch(urlBusca, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(registro),
-    });
-  } else {
-    // Registro não existe: faz POST
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(registro),
-    });
-  }
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(registro),
+  });
 
   limparFormulario(campos, prefixo);
   carregarExisteEm();

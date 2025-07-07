@@ -2,7 +2,7 @@ import { renderizarTabela, criarInput, preencherFormulario, limparFormulario } f
 
 const API_URL = 'http://localhost:3000/ensina';
 const prefixo = 'ensina-';
-const campos = ['fk_Prof_Matricula', 'fk_Turma_Numero', 'fk_Turma_Semestre'];
+const campos = ['fk_Prof_Matricula', 'fk_Turma_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-ensina');
@@ -49,27 +49,22 @@ window.deletarEnsina = async function (item) {
 
 async function salvarEnsina() {
   const ensina = {};
-  const prefixo = 'ensina-';
-
   for (const campo of campos) {
     const el = document.getElementById(prefixo + campo);
     if (el) {
-      let valor;
-      if (campo === 'fk_Turma_Numero') {
-        valor = Number(el.value);
-        if (isNaN(valor)) continue;
-      } else {
-        valor = el.value.trim();
-        if (valor === '') continue;
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        ensina[campo] = valor;
       }
-      ensina[campo] = valor;
     }
   }
 
-  console.log("Objeto enviado para o POST:", ensina);
+  if (!ensina.fk_Prof_Matricula || !ensina.fk_Turma_Codigo) {
+    alert('Todos os campos são obrigatórios');
+    return;
+  }
 
-  const urlBusca = `${API_URL}/${ensina.fk_Prof_Matricula}/${ensina.fk_Turma_Numero}/${ensina.fk_Turma_Semestre}`;
-  
   await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -79,6 +74,3 @@ async function salvarEnsina() {
   limparFormulario(campos, prefixo);
   carregarEnsina();
 }
-
-
-

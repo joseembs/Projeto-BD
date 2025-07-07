@@ -9,8 +9,7 @@ const campos = [
   'Periodo',
   'Preferencia',
   'fk_Aluno_Matricula',
-  'fk_Turma_Numero',
-  'fk_Turma_Semestre'
+  'fk_Turma_Codigo'
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,7 +23,7 @@ function montarFormulario() {
   const div = document.getElementById('form-fila');
   div.classList.add('form-grid');
   div.innerHTML = campos.map(c => {
-    const tipo = ['Prioridade', 'Posicao', 'Preferencia', 'fk_Turma_Numero'].includes(c) ? 'number' : 'text';
+    const tipo = ['Prioridade', 'Posicao', 'Preferencia'].includes(c) ? 'number' : 'text';
     return criarInput(prefixo + c, c, tipo);
   }).join('') +
     `<button id="salvarFila">Salvar</button><button id="carregarFila">Carregar</button>`;

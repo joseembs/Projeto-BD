@@ -2,7 +2,7 @@ import { salvarOuAtualizar, deletar, renderizarTabela, criarInput, preencherForm
 
 const API_URL = 'http://localhost:3000/turmas';
 const prefixo = 'turma-';
-const campos = ['Numero', 'Semestre', 'DataHora', 'Metodologia', 'Capacidade', 'FK_Disciplina_Codigo'];
+const campos = ['Codigo', 'Numero', 'Semestre', 'DataHora', 'Metodologia', 'Capacidade', 'FK_Disciplina_Codigo'];
 
 document.addEventListener('DOMContentLoaded', () => {
   const div = document.getElementById('form-turma');
@@ -44,10 +44,8 @@ window.editarTurma = function(turma) {
   preencherFormulario(campos, turma, prefixo);
 };
 
-window.deletarTurma = async function(numero, semestre) {
-  if (!confirm('Deseja realmente excluir?')) return;
-  await fetch(`${API_URL}/${numero}/${semestre}`, { method: 'DELETE' });
-  carregarTurmas();
+window.deletarTurma = function(codigo) {
+  deletar(API_URL, codigo, true).then(carregarTurmas);
 };
 
 async function salvarTurma() {
@@ -55,40 +53,15 @@ async function salvarTurma() {
   for (const campo of campos) {
     const el = document.getElementById(prefixo + campo);
     if (el) {
-      let valor;
-      if (el.type === 'number') {
-        valor = Number(el.value);
-        if (isNaN(valor)) continue; // Ignorar se não for número válido
-      } else {
-        valor = el.value.trim();
-        if (valor === '') continue; // Ignorar string vazia
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        turma[campo] = valor;
       }
-      turma[campo] = valor;
     }
   }
 
-  if (!turma.Numero || !turma.Semestre) {
-    alert('Número e Semestre são obrigatórios');
-    return;
-  }
-
-  const urlBusca = `${API_URL}/${turma.Numero}/${turma.Semestre}`;
-  const res = await fetch(urlBusca);
-
-  if (res.ok) {
-    await fetch(urlBusca, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(turma)
-    });
-  } else {
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(turma)
-    });
-  }
-
+  await salvarOuAtualizar(API_URL, 'Codigo', turma);
   limparFormulario(campos, prefixo);
   carregarTurmas();
 }

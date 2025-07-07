@@ -50,6 +50,7 @@
     <table id="tabela-ementa">
       <thead>
         <tr>
+          <th>Codigo</th>
           <th>Numero</th>
           <th>Detalhes</th>
           <th>Bibliografia</th>
@@ -116,6 +117,7 @@
     <table id="tabela-turma">
       <thead>
         <tr>
+          <th>Codigo</th>
           <th>Numero</th>
           <th>Semestre</th>
           <th>DataHora</th>
@@ -136,9 +138,8 @@
     <table id="tabela-ensina">
       <thead>
         <tr>
-          <th>Professor</th>
-          <th>Turma Nº</th>
-          <th>Semestre</th>
+          <th>fk_Prof_Matricula</th>
+          <th>fk_Turma_Codigo</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -153,8 +154,8 @@
     <table id="tabela-prerequisitos">
       <thead>
         <tr>
-          <th>Disciplina</th>
-          <th>Pré-Requisito</th>
+          <th>fk_Disciplina</th>
+          <th>fk_Disciplina_Requisito</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -187,9 +188,8 @@
     <table id="tabela-existeem">
       <thead>
         <tr>
-          <th>Código Local</th>
-          <th>Turma Nº</th>
-          <th>Semestre</th>
+          <th>fk_Local_Codigo</th>
+          <th>fk_Turma_Codigo</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -247,9 +247,8 @@
     <table id="tabela-historico">
       <thead>
         <tr>
-          <th>Turma Nº</th>
-          <th>Semestre</th>
-          <th>Matrícula</th>
+          <th>fk_Turma_Codigo</th>
+          <th>fk_Aluno_Matricula</th>
           <th>Status</th>
           <th>Menção</th>
           <th>Ações</th>
@@ -271,9 +270,8 @@
           <th>Posição</th>
           <th>Período</th>
           <th>Preferência</th>
-          <th>Matrícula Aluno</th>
-          <th>Turma Nº</th>
-          <th>Semestre</th>
+          <th>fk_Aluno_Matricula</th>
+          <th>fk_Turma_Codigo</th>
           <th>Ações</th>
         </tr>
       </thead>
