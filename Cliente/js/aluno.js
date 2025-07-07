@@ -92,3 +92,4 @@ function toBase64(file) {
     reader.readAsDataURL(file);
   });
 }
+
