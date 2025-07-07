@@ -1,1 +1,0 @@
-/* código que inicializa o servidor */
