@@ -1,4 +1,6 @@
-CREATE VIEW Grade AS
+-- Exemplo de uso: SELECT * FROM Grade;
+
+CREATE OR REPLACE VIEW Grade AS
 SELECT Aluno.Nome AS Nome, Aluno.Matricula AS Matricula, Turma.Codigo AS Turma, Disciplina.Nome AS Disciplina
 FROM
 	HistoricoFazParte
