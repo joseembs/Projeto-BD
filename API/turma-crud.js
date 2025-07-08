@@ -83,7 +83,7 @@ router.patch("/:codigo", async (req, res, next) => {
   if (campos.length === 0) {
     return res.status(400).send("Nada para atualizar");
   }
-  valores.push(req.params.numero, req.params.semestre);
+  valores.push(req.params.codigo);
 
   try {
     const result = await pool.query(

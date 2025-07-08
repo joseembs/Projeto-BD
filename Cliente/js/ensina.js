@@ -1,4 +1,4 @@
-import { renderizarTabela, criarInput, preencherFormulario, limparFormulario } from './crudBase.js';
+import { renderizarTabela, criarInput, deletar, preencherFormulario, limparFormulario } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/ensina';
 const prefixo = 'ensina-';
@@ -21,16 +21,17 @@ function montarFormulario() {
   document.getElementById('carregarEnsina').onclick = carregarEnsina;
 }
 
-export async function carregarEnsina() {
-  const lista = await fetch(API_URL).then(r => r.json()).catch(() => []);
+async function carregarEnsina() {
+  const lista = await (await fetch(API_URL)).json();
+
   renderizarTabela(
     lista,
     campos.map(c => c.toLowerCase()),
     (item) => `
       <button onclick='editarEnsina(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Editar</button>
-      <button onclick='deletarEnsina(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Excluir</button>
+      <button onclick='deletarEnsina("${item.fk_prof_matricula}", "${item.fk_turma_codigo}")'>Excluir</button>
     `,
-    'tabela-ensina'
+    'tabela-ensina',
   );
 }
 
@@ -38,14 +39,10 @@ window.editarEnsina = function (item) {
   preencherFormulario(campos, item, prefixo);
 };
 
-window.deletarEnsina = async function (item) {
-  await fetch(API_URL, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(item)
-  });
-  carregarEnsina();
+window.deletarEnsina = async function (matricula, codigoTurma) {
+  deletar(API_URL, `${matricula}/${codigoTurma}`, true).then(carregarEnsina);
 };
+
 
 async function salvarEnsina() {
   const ensina = {};

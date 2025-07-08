@@ -16,29 +16,74 @@ input, select {
 }
 
 table {
-  border-collapse: collapse; /* Faz as bordas se fundirem em uma só */
+  border-collapse: collapse;
   width: 100%;
-  margin-bottom: 2rem; /* espaço entre tabelas */
+  margin-bottom: 2rem;
   font-family: Arial, sans-serif;
 }
 
 th, td {
-  border: 1px solid #999; /* borda cinza entre células */
+  border: 1px solid #999;
   padding: 8px 12px;
   text-align: left;
 }
 
 th {
-  background-color: #eee; /* fundo cinza claro para o cabeçalho */
+  background-color: #eee;
 }
 
 tbody tr:hover {
-  background-color: #f5f5f5; /* efeito hover na linha */
+  background-color: #f5f5f5;
 }
 
 img {
     max-width: 60px;
 }
+
+#botaoMatricular {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+#botaoMatricular:hover {
+  background-color: #c0392b;
+}
+
+#botaoMatricular:active {
+  background-color: #a93226;
+}
+
+#codigoTurmaMatricula {
+  margin-top: 20px;
+  padding: 8px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.matricula-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      
+  justify-content: center;
+}
+
+.matricula-container h2 {
+  margin-bottom: 20px;
+  color: #b03a2e;
+}
+
+#codigoTurmaMatricula {
+  margin-bottom: 15px;
+}
+
 
 .section {
   border-top: 2px solid #ccc;

@@ -12,7 +12,7 @@ const historicoSchema = Joi.object({
 
 const historicoPatchSchema = historicoSchema.fork(
   ["fk_Turma_Codigo", "fk_Aluno_Matricula"],
-  (field) => field.forbidden()
+  (field) => field.optional()
 ).fork(
   ["Status", "Mencao"],
   (field) => field.optional()

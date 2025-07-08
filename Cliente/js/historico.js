@@ -2,7 +2,8 @@ import {
   renderizarTabela,
   criarInput,
   preencherFormulario,
-  limparFormulario
+  limparFormulario,
+  deletar
 } from './crudBase.js';
 
 const API_URL = 'http://localhost:3000/historico';
@@ -39,7 +40,7 @@ async function carregarHistorico() {
     campos.map(c => c.toLowerCase()),
     (p) => `
       <button onclick='editarHistorico(${JSON.stringify(p).replace(/"/g, '&quot;')})'>Editar</button>
-      <button onclick='deletarHistorico("${p.fk_Turma_Codigo}", "${p.fk_Aluno_Matricula}")'>Excluir</button>
+      <button onclick='deletarHistorico("${p.fk_turma_codigo}", "${p.fk_aluno_matricula}")'>Excluir</button>
     `,
     'tabela-historico'
   );
@@ -50,11 +51,7 @@ window.editarHistorico = function (item) {
 };
 
 window.deletarHistorico = async function (fk_Turma_Codigo, fk_Aluno_Matricula) {
-  if (!confirm('Deseja realmente excluir este histórico?')) return;
-  await fetch(`${API_URL}/${fk_Turma_Codigo}/${fk_Aluno_Matricula}`, {
-    method: 'DELETE'
-  });
-  carregarHistorico();
+  deletar(API_URL, `${fk_Turma_Codigo}/${fk_Aluno_Matricula}`, true).then(carregarHistorico);
 };
 
 async function salvarHistorico() {

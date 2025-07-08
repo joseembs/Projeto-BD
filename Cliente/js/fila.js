@@ -98,3 +98,24 @@ async function salvarFila() {
   limparFormulario(campos, prefixo);
   carregarFila();
 }
+
+document.getElementById('botaoMatricular').onclick = async () => {
+  const codigo = document.getElementById('codigoTurmaMatricula').value.trim();
+  if (!codigo) {
+    alert("Informe o código da turma");
+    return;
+  }
+
+  const resposta = await fetch('http://localhost:3000/fila/matricular', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ codigo_turma: codigo })
+  });
+
+  if (resposta.ok) {
+    alert("Alunos matriculados com sucesso!");
+  } else {
+    const erro = await resposta.text();
+    alert("Erro ao matricular: " + erro);
+  }
+};

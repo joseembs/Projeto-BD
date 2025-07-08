@@ -37,7 +37,7 @@ VALUES
 -- Alunos
 INSERT INTO Aluno (Matricula, CPF, Nome, Email, DataDeNascimento, Idade, Status, IRA, Integralizacao, fk_Curso_Codigo, FotoPerfil)
 VALUES 
-('202312345', '12345678901', 'Ana Beatriz', 'ana@exemplo.com', '2000-05-20', 24, 'Ativo', 0.9500, 75.25, 'ENC', NULL),
+('222012345', '12345678901', 'Ana Beatriz', 'ana@exemplo.com', '2000-05-20', 24, 'Ativo', 0.9500, 75.25, 'ENC', NULL),
 ('231018875', '44444444444', 'Elis Rodrigues', 'elisrb@gmail.com', '2004-06-26', 21, 'Ativo', 4.6000, 50.00, 'CIC', NULL),
 ('231003380', '07819780177', 'José Edson', 'josembs@gmail.com', '2004-11-02', 20, 'Ativo', 4.0000, 50.00, 'CIC', NULL),
 ('231034841', '01234567890', 'Henrique Sales', 'hsales@gmail.com', '2005-01-17', 20, 'Ativo', 4.0000, 50.00, 'CIC', NULL),
@@ -47,10 +47,10 @@ VALUES
 -- Monitor
 INSERT INTO Monitor (Codigo, Tipo, Salario, fk_Aluno_Matricula)
 VALUES 
-('M1', 'Bolsista', 600.00, '202312345'),
-('M2', 'Bolsista', 700.00, '231018875'),
+('M1', 'Remunerado', 600.00, '222012345'),
+('M2', 'Remunerado', 700.00, '231018875'),
 ('M3', 'Voluntário', 0.00, '231003380'),
-('M4', 'Bolsista', 650.00, '231034841'),
+('M4', 'Remunerado', 650.00, '231034841'),
 ('M5', 'Voluntário', 0.00, '222000110');
 
 -- Local
@@ -92,7 +92,7 @@ VALUES
 -- HistoricoFazParte
 INSERT INTO HistoricoFazParte (fk_Turma_Codigo, fk_Aluno_Matricula, Status, Mencao)
 VALUES 
-('T1', '202312345', 'Aprovado', 'MM'),
+('T1', '222012345', 'Aprovado', 'MM'),
 ('T1', '231018875', 'Aprovado', 'SS'),
 ('T1', '231003380', 'Aprovado', 'SS'),
 ('T1', '231034841', 'Aprovado', 'SS'),
@@ -102,7 +102,7 @@ VALUES
 -- FilaSeMatricula
 INSERT INTO FilaSeMatricula (Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo)
 VALUES 
-('F1', 1, 1, 'Matrícula', 5, '202312345', 'T2'),
+('F1', 1, 1, 'Matrícula', 5, '222012345', 'T2'),
 ('F2', 2, 2, 'Matrícula', 4, '231018875', 'T2'),
 ('F3', 3, 3, 'Matrícula', 3, '231003380', 'T2'),
 ('F4', 4, 4, 'Matrícula', 2, '231034841', 'T2'),
@@ -123,4 +123,5 @@ VALUES
 ('CIC0002', 'CIC0001'),
 ('CIC0003', 'CIC0002'),
 ('CIC0004', 'CIC0003'),
+('MAT0005', 'CIC0003'),
 ('MAT0005', 'CIC0004');

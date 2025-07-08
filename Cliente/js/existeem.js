@@ -25,13 +25,13 @@ function montarFormulario() {
 }
 
 async function carregarExisteEm() {
-  const lista = await fetch(API_URL).then(r => r.json()).catch(() => []);
+  const lista = await (await fetch(API_URL)).json();
   renderizarTabela(
     lista,
     campos.map(c => c.toLowerCase()),
     (item) => `
       <button onclick='editarExisteEm(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Editar</button>
-      <button onclick='deletarExisteEm("${item.fk_Local_Codigo}", "${item.fk_Turma_Codigo}")'>Excluir</button>
+      <button onclick='deletarExisteEm("${item.fk_local_codigo}", "${item.fk_turma_codigo}")'>Excluir</button>
     `,
     'tabela-existeem'
   );
@@ -42,11 +42,7 @@ window.editarExisteEm = function (item) {
 };
 
 window.deletarExisteEm = async function (fk_Local_Codigo, fk_Turma_Codigo) {
-  if (!confirm('Deseja realmente excluir?')) return;
-  await fetch(`${API_URL}/${fk_Local_Codigo}/${fk_Turma_Codigo}`, {
-    method: 'DELETE',
-  });
-  carregarExisteEm();
+  deletar(API_URL, `${fk_Local_Codigo}/${fk_Turma_Codigo}`, true).then(carregarExisteEm);
 };
 
 async function salvarExisteEm() {

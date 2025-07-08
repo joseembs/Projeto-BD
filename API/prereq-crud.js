@@ -64,17 +64,12 @@ router.get("/requisito/:disciplina", async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  });
+});
 
-router.delete("/", async (req, res) => {
-  const { error } = preRequisitosSchema.validate(req.body);
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
-
-  const { fk_Disciplina, fk_Disciplina_Requisito } = req.body;
-
+router.delete("/:fk_Disciplina/:fk_Disciplina_Requisito", async (req, res) => {
   try {
+    const { fk_Disciplina, fk_Disciplina_Requisito } = req.params;
+
     const result = await pool.query(
       "DELETE FROM PreRequisitos WHERE fk_Disciplina = $1 AND fk_Disciplina_Requisito = $2",
       [fk_Disciplina, fk_Disciplina_Requisito]
@@ -84,7 +79,7 @@ router.delete("/", async (req, res) => {
     }
     res.send("Pré-requisito removido com sucesso.");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

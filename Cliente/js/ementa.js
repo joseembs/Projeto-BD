@@ -40,7 +40,7 @@ window.editarEmenta = function (ementa) {
 };
 
 window.deletarEmenta = async function (numero, disciplina) {
-  deletar(`${API_URL}/${numero}/${disciplina}`, '', false).then(carregarEmentas);
+  deletar(`${API_URL}/${numero}/${disciplina}`, '', true).then(carregarEmentas);
 };
 
 async function salvarEmenta() {

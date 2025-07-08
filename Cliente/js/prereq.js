@@ -22,82 +22,51 @@ function montarFormulario() {
 }
 
 async function carregarPreRequisitos() {
-  try {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error(await res.text());
-    const lista = await res.json();
+  const prereqs = await (await fetch(API_URL)).json();
 
-    renderizarTabela(
-      lista,
-      campos.map(c => c.toLowerCase()),
-      (item) => `
-        <button onclick='editarPreRequisito(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Editar</button>
-        <button onclick='deletarPreRequisito(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Excluir</button>
-      `,
-      'tabela-prerequisitos'
-    );
-  } catch (err) {
-    console.error('Erro ao carregar pré-requisitos:', err);
-  }
+  renderizarTabela(
+    prereqs,
+    campos.map(c => c.toLowerCase()),
+    (item) => `
+      <button onclick='editarPreRequisito(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Editar</button>
+      <button onclick='deletarPreRequisito("${item.fk_disciplina}", "${item.fk_disciplina_requisito}")'>Excluir</button>
+    `,
+    'tabela-prerequisitos'
+  );
 }
-
-async function salvarPreRequisito() {
-  const prereq = {};
-  const prefixo = 'prereq-';
-
-  for (const campo of campos) {
-    const el = document.getElementById(prefixo + campo);
-    if (el) {
-      let valor;
-      if (el.type === 'number') {
-        valor = Number(el.value);
-        if (isNaN(valor)) continue;
-      } else {
-        valor = el.value.trim();
-        if (valor === '') continue;
-      }
-      prereq[campo] = valor;
-    }
-  }
-
-  // Monta objeto sem prefixo para enviar ao backend
-  const dados = {};
-  for (const campo of campos) {
-    const chave = campo.replace(prefixo, '');
-    if (prereq[campo] !== undefined) {
-      dados[chave] = prereq[campo];
-    }
-  }
-
-  console.log("Objeto enviado para o POST:", dados);
-
-  await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados)
-  });
-
-  limparFormulario(campos, prefixo);
-  carregarPreRequisitos();
-}
-
 
 window.editarPreRequisito = function (item) {
   preencherFormulario(campos, item, prefixo);
 };
 
-window.deletarPreRequisito = async function (item) {
-  try {
-    await fetch(API_URL, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fk_Disciplina_Codigo: item.fk_Disciplina_Codigo,
-        fk_PreRequisito_Codigo: item.fk_PreRequisito_Codigo
-      })
-    });
-    carregarPreRequisitos();
-  } catch (err) {
-    console.error('Erro ao deletar pré-requisito:', err);
-  }
+window.deletarPreRequisito = function (disciplina, prerequisito) {
+  deletar(API_URL, `${disciplina}/${prerequisito}`, true).then(carregarPreRequisitos);
 };
+
+async function salvarPreRequisito() {
+  const prereq = {};
+  for (const campo of campos) {
+    const el = document.getElementById(prefixo + campo);
+    if (el) {
+      const valor = el.type === 'number' ? Number(el.value) : el.value.trim();
+      if ((typeof valor === 'string' && valor !== '') ||
+          (typeof valor === 'number' && !isNaN(valor))) {
+        prereq[campo] = valor;
+      }
+    }
+  }
+
+  if (!prereq.fk_Disciplina || !prereq.fk_Disciplina_Requisito) {
+    alert('Todos os campos são obrigatórios');
+    return;
+  }
+
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(prereq)
+  });
+
+  limparFormulario(campos, prefixo);
+  carregarPreRequisitos();
+}

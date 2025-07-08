@@ -71,26 +71,23 @@ router.get("/turma/:codigo", async (req, res) => {
   }
 });
 
-router.delete("/", async (req, res) => {
-  const { error } = ensinaSchema.validate(req.body);
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
-
-  const { fk_Prof_Matricula, fk_Turma_Codigo } = req.body;
-
+router.delete("/:fk_Prof_Matricula/:fk_Turma_Codigo", async (req, res, next) => {
   try {
+    const { fk_Prof_Matricula, fk_Turma_Codigo } = req.params;
+
     const result = await pool.query(
       "DELETE FROM Ensina WHERE fk_Prof_Matricula = $1 AND fk_Turma_Codigo = $2",
       [fk_Prof_Matricula, fk_Turma_Codigo]
     );
-    if (result.rowCount === 0) {
-      return res.status(404).send("Nenhuma relação encontrada para excluir.");
-    }
-    res.send("Relação removida com sucesso.");
+
+    if (result.rowCount === 0)
+      return res.status(404).send("Nenhuma relação encontrada com esses dados");
+
+    res.send("Relação deletada com sucesso");
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
+
 
 module.exports = router;

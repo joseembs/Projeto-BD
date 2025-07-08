@@ -5,7 +5,7 @@ const Joi = require('joi');
 
 const monitorSchema = Joi.object({
   Codigo: Joi.string().required(),
-  Tipo: Joi.string().valid('Não remunerado', 'Remunerado').required(),
+  Tipo: Joi.string().valid('Voluntário', 'Remunerado').required(),
   Salario: Joi.number().precision(2).min(0).optional(),
   fk_Aluno_Matricula: Joi.string().length(9).pattern(/^\d+$/).required(),
 });

@@ -34,7 +34,7 @@ async function carregarTurmas() {
     campos.map(c => c.toLowerCase()),
     (t) => `
       <button onclick='editarTurma(${JSON.stringify(t).replace(/"/g, '&quot;')})'>Editar</button>
-      <button onclick='deletarTurma(${t.numero}, "${t.semestre}")'>Excluir</button>
+      <button onclick='deletarTurma("${t.codigo}")'>Excluir</button>
     `,
     'tabela-turma'
   );

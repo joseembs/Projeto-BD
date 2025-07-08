@@ -15,7 +15,7 @@ const filaSchema = Joi.object({
 
 const filaPatchSchema = filaSchema.fork(
   ["Codigo"],
-  (field) => field.forbidden()
+  (field) => field.optional()
 ).fork(
   ["Prioridade", "Posicao", "Periodo", "Preferencia", "fk_Aluno_Matricula", "fk_Turma_Codigo"],
   (field) => field.optional()
@@ -28,6 +28,11 @@ router.post("/", async (req, res, next) => {
   const { Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo } = req.body;
 
   try {
+    const podeMatricular = await verificarPreRequisitos(pool, fk_Aluno_Matricula, fk_Turma_Codigo);
+    if (!podeMatricular) {
+      return res.status(400).send("Aluno não cumpre os pré-requisitos para esta turma.");
+    }
+
     await pool.query(
       `INSERT INTO FilaSeMatricula 
        (Codigo, Prioridade, Posicao, Periodo, Preferencia, fk_Aluno_Matricula, fk_Turma_Codigo) 
@@ -118,6 +123,51 @@ router.delete("/:Codigo", async (req, res, next) => {
   }
 });
 
+async function verificarPreRequisitos(pool, matricula, codigoTurma) {
+  // Obter a disciplina da turma
+  const turma = await pool.query(
+    `SELECT fk_Disciplina_Codigo FROM Turma WHERE Codigo = $1`,
+    [codigoTurma]
+  );
+  if (turma.rows.length === 0) throw new Error('Turma não encontrada');
+  const disciplinaCodigo = turma.rows[0].fk_disciplina_codigo;
+
+  // Obter os pré-requisitos da disciplina
+  const prereqs = await pool.query(
+    `SELECT fk_Disciplina_Requisito FROM PreRequisitos WHERE fk_Disciplina = $1`,
+    [disciplinaCodigo]
+  );
+  const codigosRequisitos = prereqs.rows.map(r => r.fk_disciplina_requisito);
+
+  if (codigosRequisitos.length === 0) return true; // Sem pré-requisitos
+
+  // Verificar se o aluno foi aprovado nas disciplinas requisito
+  const historico = await pool.query(
+    `SELECT T.fk_Disciplina_Codigo AS disciplina, H.Mencao
+     FROM HistoricoFazParte H
+     JOIN Turma T ON H.fk_Turma_Codigo = T.Codigo
+     WHERE H.fk_Aluno_Matricula = $1`,
+    [matricula]
+  );
+
+  const mencoesPorDisciplina = {};
+  historico.rows.forEach(({ disciplina, mencao }) => {
+    if (!mencoesPorDisciplina[disciplina]) {
+      mencoesPorDisciplina[disciplina] = [];
+    }
+    mencoesPorDisciplina[disciplina].push(mencao);
+  });
+
+  for (const codigo of codigosRequisitos) {
+    const mencoes = mencoesPorDisciplina[codigo] || [];
+    if (!mencoes.some(m => mencoesValidas.includes(m))) {
+      return false; // Não cumpriu o requisito
+    }
+  }
+
+  return true;
+}
+
 async function reorganizarFilaDaTurma(codigo) {
   try {
     // Buscar entradas da Fila da turma com dados do aluno
@@ -168,5 +218,19 @@ async function reorganizarFilaDaTurma(codigo) {
     console.error('Erro ao reorganizar fila:', err);
   }
 }
+
+router.post("/matricular", async (req, res) => {
+  const { codigo_turma } = req.body;
+  if (!codigo_turma) {
+    return res.status(400).send("Código da turma é obrigatório.");
+  }
+
+  try {
+    await pool.query(`CALL matricular_alunos($1)`, [codigo_turma]);
+    res.status(200).send("Alunos matriculados com sucesso.");
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
