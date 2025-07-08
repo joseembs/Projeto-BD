@@ -103,7 +103,7 @@ CREATE TABLE HistoricoFazParte (
     Status VARCHAR,
     Mencao VARCHAR,
     PRIMARY KEY (fk_Turma_Codigo, fk_Aluno_Matricula),
-    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo) ON DELETE SET NULL,
+    FOREIGN KEY (fk_Turma_Codigo) REFERENCES Turma (Codigo) ON DELETE CASCADE,
     FOREIGN KEY (fk_Aluno_Matricula) REFERENCES Aluno (Matricula) ON DELETE CASCADE
 );
 
