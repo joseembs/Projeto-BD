@@ -1,5 +1,4 @@
 function errorHandler(err, req, res, next) {
-  // Sempre logue o erro bruto no terminal:
   console.error('Erro capturado:', err);
 
   // Se for erro vindo do PostgreSQL
@@ -24,7 +23,7 @@ function handlePgError(err) {
     case "42703":
       return { status: 400, message: "Coluna inválida (erro de nome de campo)" };
     default:
-      console.error('Erro PostgreSQL não tratado:', err); // <-- Adicione isto
+      console.error('Erro PostgreSQL não tratado:', err);
       return { status: 500, message: "Erro interno no banco de dados" };
   }
 }

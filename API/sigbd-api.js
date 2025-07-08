@@ -30,7 +30,6 @@ crudModules.forEach(({path, file}) => {
   app.use(path, require(`./cruds/${file}`));
 });
 
-// joga node API/sigbd-api.js no terminal para rodar
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
