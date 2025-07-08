@@ -25,3 +25,11 @@ O banco de dados do SIGBD foi feito utilizando PostgreSQL. Os scripts utilizados
 
 \* A view *Grade* não está visível na interface de usuário do SIGBD. Dessa forma, as consultas relacionadas a ela devem ser feitas diretamente no banco de dados.
 Para visualizar os dados atuais da view, execute a query: `SELECT * FROM Grade`.
+
+### Inicializar a Aplicação
+O SIGBD foi desenvolvido usando Node.js. Dessa forma, para utilizar a aplicação, é necessario ter o Node.js e o npm instalados em seu sistema e executar no diretório do projeto:
+
+1. `npm install` para instalar as dependências do projeto
+2. `npm start` para iniciar o servidor
+
+Em seguida, execute o arquivo `Cliente/index.html` com Live Server para acessar a interface do usuário.
