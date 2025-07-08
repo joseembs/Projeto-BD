@@ -13,9 +13,15 @@ Henrique Cerqueira Ramos Sales - 231034841
 
 José Edson Martins Bezerra da Silva - 231003380
 
+## Visão Geral:
+
+O SIGBD é um sistema que gerencia a matrícula dentro de uma universidade.
+
+O projeto foi desenvolvido usando Node.js e PostgreSQL.
+
 ## Instruções para execução:
 ### Criação do Banco de Dados
-O banco de dados do SIGBD foi feito utilizando PostgreSQL. Os scripts utilizados para criar o banco estão no diretório **SQL**, devendo ser executados na seguinte ordem:
+Os scripts utilizados para criar o banco estão no diretório **SQL**, devendo ser executados na seguinte ordem:
 
 1. `SQL-init-SIGBD.sql` para criar as tabelas
 2. `procedure.sql` para criar e habilitar o processamento da matrícula por meio da procedure *matricular_alunos*
@@ -27,7 +33,7 @@ O banco de dados do SIGBD foi feito utilizando PostgreSQL. Os scripts utilizados
 Para visualizar os dados atuais da view, execute a query: `SELECT * FROM Grade`.
 
 ### Inicializar a Aplicação
-O SIGBD foi desenvolvido usando Node.js. Dessa forma, para utilizar a aplicação, é necessario ter o Node.js e o npm instalados em seu sistema e executar no diretório do projeto:
+Para utilizar a aplicação do SIGBD, é necessario ter o Node.js e o npm instalados em seu sistema e executar no diretório do projeto:
 
 1. `npm install` para instalar as dependências do projeto
 2. `npm start` para iniciar o servidor
