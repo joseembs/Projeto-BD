@@ -9,47 +9,26 @@ app.use(cors());
 
 app.use(express.json());
 
-const professorRoutes = require("./professor-crud");
-app.use("/professores", professorRoutes);
+const crudModules = [
+  { path: "/alunos", file: "aluno-crud" },
+  { path: "/cursos", file: "curso-crud" },
+  { path: "/departamentos", file: "departamento-crud" },
+  { path: "/disciplinas", file: "disciplina-crud" },
+  { path: "/ementas", file: "ementa-crud" },
+  { path: "/ensina", file: "ensina-crud" },
+  { path: "/existeem", file: "existeem-crud" },
+  { path: "/fila", file: "fila-crud" },
+  { path: "/historico", file: "historico-crud" },
+  { path: "/locais", file: "local-crud" },
+  { path: "/monitores", file: "monitor-crud" },
+  { path: "/prereqs", file: "prereq-crud" },
+  { path: "/professores", file: "professor-crud" },
+  { path: "/turmas", file: "turma-crud" },
+];
 
-const alunoRoutes = require("./aluno-crud");
-app.use("/alunos", alunoRoutes);
-
-const turmaRoutes = require("./turma-crud");
-app.use("/turmas", turmaRoutes);
-
-const monitorRoutes = require("./monitor-crud");
-app.use("/monitores", monitorRoutes);
-
-const cursoRoutes = require("./curso-crud");
-app.use("/cursos", cursoRoutes);
-
-const departamentoRoutes = require("./departamento-crud");
-app.use("/departamentos", departamentoRoutes);
-
-const disciplinaRoutes = require("./disciplina-crud");
-app.use("/disciplinas", disciplinaRoutes);
-
-const ementaRoutes = require("./ementa-crud");
-app.use("/ementas", ementaRoutes);
-
-const localRoutes = require("./local-crud");
-app.use("/locais", localRoutes);
-
-const prereqRoutes = require("./prereq-crud");
-app.use("/prereqs", prereqRoutes);
-
-const ensinaRoutes = require("./ensina-crud");
-app.use("/ensina", ensinaRoutes);
-
-const existeemRoutes = require("./existeem-crud");
-app.use("/existeem", existeemRoutes);
-
-const historicoRoutes = require("./historico-crud");
-app.use("/historico", historicoRoutes);
-
-const filaRoutes = require("./fila-crud");
-app.use("/fila", filaRoutes);
+crudModules.forEach(({path, file}) => {
+  app.use(path, require(`./cruds/${file}`));
+});
 
 // joga node API/sigbd-api.js no terminal para rodar
 app.listen(port, () => {

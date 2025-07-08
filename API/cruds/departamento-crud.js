@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("./db-setup");
+const pool = require("../db-setup");
 const Joi = require('joi');
 
 const nao_achou = "Não existe departamento com o código fornecido";

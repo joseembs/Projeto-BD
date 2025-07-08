@@ -25,7 +25,6 @@ export async function salvarOuAtualizar(url, chavePrimaria, objeto) {
   });
 }
 
-
 export async function deletar(url, id, confirmar = true) {
   if (confirmar && !confirm('Deseja realmente excluir?')) return;
   await fetch(`${url}/${id}`, { method: 'DELETE' });
